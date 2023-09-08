@@ -13,21 +13,26 @@ class ReadingScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        // Show actual chapter name
-        title: EpubViewActualChapter(
-            controller: epubController,
-            builder: (chapterValue) => Text(
-                  "Chapter: ${chapterValue?.chapter?.Title?.replaceAll('\n', '').trim() ?? ''}",
-                  textAlign: TextAlign.start,
-                )),
-      ),
-      // Show table of contents
+          title: EpubViewActualChapter(
+        controller: epubController,
+        builder: (chapterValue) {
+          final String chapter =
+              chapterValue?.chapter?.Title?.replaceAll('\n', '').trim() ?? '';
+
+          return RichText(
+            text: TextSpan(
+                text: chapter,
+                style: DefaultTextStyle.of(context)
+                    .style
+                    .apply(fontSizeFactor: 0.5)),
+          );
+        },
+      )),
       drawer: Drawer(
         child: EpubViewTableOfContents(
           controller: epubController,
         ),
       ),
-      // Show epub document
       body: EpubView(
         controller: epubController,
       ),
