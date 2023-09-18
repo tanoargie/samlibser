@@ -105,7 +105,7 @@ class AuthenticationRepository {
   /// the authentication state changes.
   ///
   /// Emits [User.empty] if the user is not authenticated.
-  Future<User?> get user async {
+  Future<User> get user async {
     final storage = new FlutterSecureStorage();
     final token = await storage.read(key: "authToken");
     if (token?.isEmpty == false && token != null) {
