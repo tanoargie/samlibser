@@ -101,10 +101,10 @@ class AuthenticationRepository {
   @visibleForTesting
   static const userCacheKey = '__user_cache_key__';
 
-  /// Stream of [User] which will emit the current user when
+  /// Future of [User] which will emit the current user when
   /// the authentication state changes.
   ///
-  /// Emits [User.empty] if the user is not authenticated.
+  /// [User.empty] if the user is not authenticated.
   Future<User> get user async {
     final storage = new FlutterSecureStorage();
     final token = await storage.read(key: "authToken");
