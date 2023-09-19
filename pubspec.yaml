@@ -47,6 +47,8 @@ dependencies:
   authentication_repository:
     path: packages/authentication_repository
   font_awesome_flutter: ^9.2.0
+  google_fonts: ^4.0.4
+  flow_builder: ^0.0.9
 
 dev_dependencies:
   flutter_test:

@@ -4,6 +4,7 @@ import 'package:samlibser/app/view/app.dart';
 
 Future<void> main() async {
   final authenticationRepository = AuthenticationRepository();
+  WidgetsFlutterBinding.ensureInitialized();
   await authenticationRepository.user;
   runApp(App(authenticationRepository: authenticationRepository));
 }

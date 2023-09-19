@@ -1,7 +1,10 @@
 import 'package:authentication_repository/authentication_repository.dart';
 import 'package:flutter/material.dart';
+import 'package:flow_builder/flow_builder.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:samlibser/app/bloc/app_bloc.dart';
+import 'package:samlibser/theme.dart';
+import 'package:samlibser/app/routes/routes.dart';
 
 class App extends StatelessWidget {
   const App({
@@ -30,10 +33,11 @@ class AppView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: const Text("tests"),
+    return MaterialApp(
+      theme: theme,
+      home: FlowBuilder<AppStatus>(
+        state: context.select((AppBloc bloc) => bloc.state.status),
+        onGeneratePages: onGenerateAppViewPages,
       ),
     );
   }
