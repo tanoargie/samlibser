@@ -11,10 +11,12 @@ dependencies:
     path: ../cache
   dart_jsonwebtoken: ^2.11.0
   equatable: ^2.0.5
+  firebase_auth: ^4.10.0
+  firebase_core: ^2.16.0
   flutter:
     sdk: flutter
   flutter_secure_storage: ^9.0.0
-  google_sign_in: ^6.1.0
+  google_sign_in: ^6.1.5
   http: ^0.13.4
   meta: ^1.8.0
 
