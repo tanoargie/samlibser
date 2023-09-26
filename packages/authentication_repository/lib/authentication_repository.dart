@@ -181,6 +181,8 @@ class AuthenticationRepository {
   /// [User.empty] if the user is not authenticated.
   Stream<User> get user {
     return _firebaseAuth.authStateChanges().map((firebaseUser) {
+      print("Test");
+      print(firebaseUser);
       final user = firebaseUser == null ? User.empty : firebaseUser.toUser;
       _cache.write(key: userCacheKey, value: user);
       return user;
@@ -231,9 +233,10 @@ class AuthenticationRepository {
       }
 
       await _firebaseAuth.signInWithCredential(credential);
-    } on firebase_auth.FirebaseAuthException catch (e) {
-      throw LogInWithGoogleFailure.fromCode(e.code);
-    } catch (_) {
+    // } on firebase_auth.FirebaseAuthException catch (e) {
+    //   throw LogInWithGoogleFailure.fromCode(e.code);
+    } catch (e) {
+      print(e);
       throw const LogInWithGoogleFailure();
     }
   }

@@ -58,14 +58,15 @@ class LoginCubit extends Cubit<LoginState> {
     try {
       await _authenticationRepository.logInWithGoogle();
       emit(state.copyWith(status: FormzSubmissionStatus.success));
-    } on LogInWithGoogleFailure catch (e) {
-      emit(
-        state.copyWith(
-          errorMessage: e.message,
-          status: FormzSubmissionStatus.failure,
-        ),
-      );
-    } catch (_) {
+    // } on LogInWithGoogleFailure catch (e) {
+    //   emit(
+    //     state.copyWith(
+    //       errorMessage: e.message,
+    //       status: FormzSubmissionStatus.failure,
+    //     ),
+    //   );
+    } catch (e) {
+      print(e);
       emit(state.copyWith(status: FormzSubmissionStatus.failure));
     }
   }
