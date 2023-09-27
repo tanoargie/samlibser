@@ -25,10 +25,7 @@ class DefaultFirebaseOptions {
       case TargetPlatform.iOS:
         return ios;
       case TargetPlatform.macOS:
-        throw UnsupportedError(
-          'DefaultFirebaseOptions have not been configured for macos - '
-          'you can reconfigure this by running the FlutterFire CLI again.',
-        );
+        return macos;
       case TargetPlatform.windows:
         throw UnsupportedError(
           'DefaultFirebaseOptions have not been configured for windows - '
@@ -57,7 +54,7 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyDAucOl8Txh4x7lYjm7yP9BM9sI8NpVhrQ',
-    appId: '1:782236620420:android:b7545030e4b85f860854d1',
+    appId: '1:782236620420:android:21e080e4d8721cc40854d1',
     messagingSenderId: '782236620420',
     projectId: 'samlibser-2bf1e',
     storageBucket: 'samlibser-2bf1e.appspot.com',
@@ -72,5 +69,16 @@ class DefaultFirebaseOptions {
     androidClientId: '782236620420-0dtsmt0g238jsbqagfqqtimbi78b90m3.apps.googleusercontent.com',
     iosClientId: '782236620420-s9fvvcmtl7kl0sg7b0o0nlao0ps75bc6.apps.googleusercontent.com',
     iosBundleId: 'com.example.samlibser',
+  );
+
+  static const FirebaseOptions macos = FirebaseOptions(
+    apiKey: 'AIzaSyAkmERvziBN3ik6z6J2BazBwg2NBA5GKlE',
+    appId: '1:782236620420:ios:26ea68922cdad1760854d1',
+    messagingSenderId: '782236620420',
+    projectId: 'samlibser-2bf1e',
+    storageBucket: 'samlibser-2bf1e.appspot.com',
+    androidClientId: '782236620420-0dtsmt0g238jsbqagfqqtimbi78b90m3.apps.googleusercontent.com',
+    iosClientId: '782236620420-415d1qo80du7s7e2en75ki3fonprn97g.apps.googleusercontent.com',
+    iosBundleId: 'com.example.samlibser.RunnerTests',
   );
 }

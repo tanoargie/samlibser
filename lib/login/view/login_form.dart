@@ -42,16 +42,13 @@ class LoginForm extends StatelessWidget {
               const SizedBox(height: 8),
               _SignUpButton(),
               SizedBox(
-                width: 220.0,
-                child: Column(
-                  children: [
+                  width: 220.0,
+                  child: Column(children: [
                     _GoogleLoginButton(),
                     const SizedBox(height: 4),
                     _AppleLoginButton(),
                     const SizedBox(height: 4),
-                  ]
-                )
-              )
+                  ]))
             ],
           ),
         ),
@@ -136,14 +133,10 @@ class _GoogleLoginButton extends StatelessWidget {
     return MaterialButton(
       textColor: Colors.black,
       color: Colors.white,
-      child: const Row(
-        children: <Widget>[
-          Image(
-            image: AssetImage('assets/google_light.png')
-          ),
-          Text('Sign in with Google')
-        ]
-      ),
+      child: const Row(children: <Widget>[
+        Image(image: AssetImage('assets/google_light.png')),
+        Text('Sign in with Google')
+      ]),
       onPressed: () => context.read<LoginCubit>().logInWithGoogle(),
     );
   }
@@ -155,15 +148,11 @@ class _AppleLoginButton extends StatelessWidget {
     return MaterialButton(
       textColor: Colors.black,
       color: Colors.white,
-      child: const Row(
-        children: <Widget>[
-          Image(
-            image: AssetImage('assets/apple_light.png')
-          ),
-          Text('Sign in with Apple')
-        ]
-      ),
-      onPressed: () => context.read<LoginCubit>().logInWithGoogle(),
+      child: const Row(children: <Widget>[
+        Image(image: AssetImage('assets/apple_light.png')),
+        Text('Sign in with Apple')
+      ]),
+      onPressed: () => context.read<LoginCubit>().logInWithApple(),
     );
   }
 }

@@ -53,20 +53,36 @@ class LoginCubit extends Cubit<LoginState> {
     }
   }
 
+  Future<void> logInWithApple() async {
+    emit(state.copyWith(status: FormzSubmissionStatus.inProgress));
+    try {
+      await _authenticationRepository.logInWithApple();
+      emit(state.copyWith(status: FormzSubmissionStatus.success));
+    } on LogInWithAppleFailure catch (e) {
+      emit(
+        state.copyWith(
+          errorMessage: e.message,
+          status: FormzSubmissionStatus.failure,
+        ),
+      );
+    } catch (e) {
+      emit(state.copyWith(status: FormzSubmissionStatus.failure));
+    }
+  }
+
   Future<void> logInWithGoogle() async {
     emit(state.copyWith(status: FormzSubmissionStatus.inProgress));
     try {
       await _authenticationRepository.logInWithGoogle();
       emit(state.copyWith(status: FormzSubmissionStatus.success));
-    // } on LogInWithGoogleFailure catch (e) {
-    //   emit(
-    //     state.copyWith(
-    //       errorMessage: e.message,
-    //       status: FormzSubmissionStatus.failure,
-    //     ),
-    //   );
+    } on LogInWithGoogleFailure catch (e) {
+      emit(
+        state.copyWith(
+          errorMessage: e.message,
+          status: FormzSubmissionStatus.failure,
+        ),
+      );
     } catch (e) {
-      print(e);
       emit(state.copyWith(status: FormzSubmissionStatus.failure));
     }
   }

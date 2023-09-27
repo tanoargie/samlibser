@@ -93,6 +93,61 @@ class LogInWithEmailAndPasswordFailure implements Exception {
 /// Thrown during the sign in with google process if a failure occurs.
 /// https://pub.dev/documentation/firebase_auth/latest/firebase_auth/FirebaseAuth/signInWithCredential.html
 /// {@endtemplate}
+class LogInWithAppleFailure implements Exception {
+  /// {@macro log_in_with_google_failure}
+  const LogInWithAppleFailure([
+    this.message = 'An unknown exception occurred.',
+  ]);
+
+  /// Create an authentication message
+  /// from a firebase authentication exception code.
+  factory LogInWithAppleFailure.fromCode(String code) {
+    switch (code) {
+      case 'account-exists-with-different-credential':
+        return const LogInWithAppleFailure(
+          'Account exists with different credentials.',
+        );
+      case 'invalid-credential':
+        return const LogInWithAppleFailure(
+          'The credential received is malformed or has expired.',
+        );
+      case 'operation-not-allowed':
+        return const LogInWithAppleFailure(
+          'Operation is not allowed.  Please contact support.',
+        );
+      case 'user-disabled':
+        return const LogInWithAppleFailure(
+          'This user has been disabled. Please contact support for help.',
+        );
+      case 'user-not-found':
+        return const LogInWithAppleFailure(
+          'Email is not found, please create an account.',
+        );
+      case 'wrong-password':
+        return const LogInWithAppleFailure(
+          'Incorrect password, please try again.',
+        );
+      case 'invalid-verification-code':
+        return const LogInWithAppleFailure(
+          'The credential verification code received is invalid.',
+        );
+      case 'invalid-verification-id':
+        return const LogInWithAppleFailure(
+          'The credential verification ID received is invalid.',
+        );
+      default:
+        return const LogInWithAppleFailure();
+    }
+  }
+
+  /// The associated error message.
+  final String message;
+}
+
+/// {@template log_in_with_google_failure}
+/// Thrown during the sign in with google process if a failure occurs.
+/// https://pub.dev/documentation/firebase_auth/latest/firebase_auth/FirebaseAuth/signInWithCredential.html
+/// {@endtemplate}
 class LogInWithGoogleFailure implements Exception {
   /// {@macro log_in_with_google_failure}
   const LogInWithGoogleFailure([
@@ -181,8 +236,6 @@ class AuthenticationRepository {
   /// [User.empty] if the user is not authenticated.
   Stream<User> get user {
     return _firebaseAuth.authStateChanges().map((firebaseUser) {
-      print("Test");
-      print(firebaseUser);
       final user = firebaseUser == null ? User.empty : firebaseUser.toUser;
       _cache.write(key: userCacheKey, value: user);
       return user;
@@ -233,11 +286,36 @@ class AuthenticationRepository {
       }
 
       await _firebaseAuth.signInWithCredential(credential);
-    // } on firebase_auth.FirebaseAuthException catch (e) {
-    //   throw LogInWithGoogleFailure.fromCode(e.code);
-    } catch (e) {
-      print(e);
+    } on firebase_auth.FirebaseAuthException catch (e) {
+      throw LogInWithGoogleFailure.fromCode(e.code);
+    } catch (_) {
       throw const LogInWithGoogleFailure();
+    }
+  }
+
+  Future<void> logInWithApple() async {
+    try {
+      late final firebase_auth.AuthCredential credential;
+      final appleProvider = firebase_auth.AppleAuthProvider();
+      appleProvider.addScope('email');
+      appleProvider.addScope('name');
+      if (isWeb) {
+        final userCredential =
+            await _firebaseAuth.signInWithPopup(appleProvider);
+        credential = userCredential.credential!;
+      } else {
+        final userCredential =
+            await _firebaseAuth.signInWithProvider(appleProvider);
+        credential = userCredential.credential!;
+      }
+
+      await _firebaseAuth.signInWithCredential(credential);
+    } on firebase_auth.FirebaseAuthException catch (e) {
+      //TODO: Logging
+      throw LogInWithAppleFailure.fromCode(e.code);
+    } catch (_) {
+      //TODO: Logging
+      throw const LogInWithAppleFailure();
     }
   }
 
@@ -251,8 +329,10 @@ class AuthenticationRepository {
         password: password,
       );
     } on firebase_auth.FirebaseAuthException catch (e) {
+      //TODO: Logging
       throw LogInWithEmailAndPasswordFailure.fromCode(e.code);
     } catch (_) {
+      //TODO: Logging
       throw const LogInWithEmailAndPasswordFailure();
     }
   }

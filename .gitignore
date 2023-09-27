@@ -107,6 +107,7 @@ unlinked_spec.ds
 # macOS
 **/macos/Flutter/GeneratedPluginRegistrant.swift
 **/macos/Runner/Info.plist
+**/macos/Runner/GoogleService-Info.plist
 
 # Coverage
 coverage/
