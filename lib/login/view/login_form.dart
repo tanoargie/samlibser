@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:flutter_signin_button/flutter_signin_button.dart';
 import 'package:samlibser/login/cubit/login_cubit.dart';
 import 'package:samlibser/sign_up/view/sign_up_page.dart';
 import 'package:formz/formz.dart';

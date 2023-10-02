@@ -1,0 +1,23 @@
+name: book_repository
+description: Dart package which manages the books domain.
+version: 1.0.0
+publish_to: none
+
+environment:
+  sdk: ">=3.0.0 <4.0.0"
+
+dependencies:
+  cache:
+    path: ../cache
+  equatable: ^2.0.5
+  file_picker: ^5.5.0
+  firebase_auth: ^4.10.0
+  firebase_core: ^2.16.0
+  flutter:
+    sdk: flutter
+  flutter_secure_storage: ^9.0.0
+  http: ^0.13.4
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
