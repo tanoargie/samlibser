@@ -4,13 +4,17 @@ import 'package:file_picker/file_picker.dart';
 import 'package:book_repository/models/book.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-class BookRepository {
+abstract class SamserBookRepository {
+  final baseUrl = Uri.https('samlibser-api.samser.co', '/api/books');
+}
+
+class BookRepository extends SamserBookRepository {
   Future<Map<String, Book>> getBooks() async {
     var tokenResult =
         await FirebaseAuth.instance.currentUser?.getIdTokenResult();
     var token = tokenResult?.token;
-    var response = await http.get(Uri.http('localhost:3000', '/api/books'),
-        headers: {'Authorization': "Bearer ${token}"});
+    var response =
+        await http.get(baseUrl, headers: {'Authorization': "Bearer ${token}"});
     final responseJson = jsonDecode(response.body);
     List<dynamic> userBooks = responseJson.books;
     Map<String, Book> userBooksMap = Map();
@@ -43,8 +47,7 @@ class BookRepository {
         "Authorization": "Bearer ${token}",
         'Content-Type': 'multipart/form-data;',
       };
-      var request = http.MultipartRequest(
-          'POST', Uri.http('localhost:3000', '/api/books'));
+      var request = http.MultipartRequest('POST', baseUrl);
       var file = await http.MultipartFile.fromPath('file', bookFile.path ?? "",
           filename: bookFile.name);
       request.headers.addAll(headers);
@@ -55,7 +58,6 @@ class BookRepository {
       Book book = responseJson.book;
       return book;
     } catch (err) {
-      print(err);
       throw Exception("error");
     }
   }
