@@ -30,7 +30,6 @@ class HomeCubit extends Cubit<HomeState> {
         ..addEntries(savedBookMap.entries);
       emit(state.copyWith(books: savedBooks));
     } catch (e) {
-      print(e);
       logger.e("Error addBook", error: "$e");
     }
   }

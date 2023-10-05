@@ -14,10 +14,10 @@ class BookRepository extends SamserBookRepository {
         await FirebaseAuth.instance.currentUser?.getIdTokenResult();
     var token = tokenResult?.token;
     var response =
-        await http.get(baseUrl, headers: {'Authorization': "Bearer ${token}"});
+        await http.get(baseUrl, headers: {'Authorization': "Bearer $token"});
     final responseJson = jsonDecode(response.body);
     List<dynamic> userBooks = responseJson.books;
-    Map<String, Book> userBooksMap = Map();
+    Map<String, Book> userBooksMap = <String, Book>{};
     for (int loop = 0; loop < userBooks.length; loop++) {
       userBooksMap.addEntries(
           [MapEntry(userBooks[loop].id, Book.fromJson(userBooks[loop]))]);
@@ -44,7 +44,7 @@ class BookRepository extends SamserBookRepository {
           await FirebaseAuth.instance.currentUser?.getIdTokenResult();
       var token = tokenResult?.token;
       Map<String, String> headers = {
-        "Authorization": "Bearer ${token}",
+        "Authorization": "Bearer $token",
         'Content-Type': 'multipart/form-data;',
       };
       var request = http.MultipartRequest('POST', baseUrl);
