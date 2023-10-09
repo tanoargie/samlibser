@@ -5,7 +5,8 @@ import 'package:book_repository/models/book.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 abstract class SamserBookRepository {
-  final baseUrl = Uri.https('samlibser-api.samser.co', '/api/books');
+  final baseUrl = Uri.https(
+      '62f9-2800-40-33-490-7d4e-c70f-43d2-be00.ngrok-free.app', '/api/books');
 }
 
 class BookRepository extends SamserBookRepository {
@@ -16,11 +17,13 @@ class BookRepository extends SamserBookRepository {
     var response =
         await http.get(baseUrl, headers: {'Authorization': "Bearer $token"});
     final responseJson = jsonDecode(response.body);
-    List<dynamic> userBooks = responseJson.books;
+    List<dynamic> userBooks = responseJson["data"];
     Map<String, Book> userBooksMap = <String, Book>{};
     for (int loop = 0; loop < userBooks.length; loop++) {
-      userBooksMap.addEntries(
-          [MapEntry(userBooks[loop].id, Book.fromJson(userBooks[loop]))]);
+      userBooksMap.addEntries([
+        MapEntry(userBooks.elementAt(loop)["ID"].toString(),
+            Book.fromJson(userBooks.elementAt(loop)))
+      ]);
     }
     return userBooksMap;
   }

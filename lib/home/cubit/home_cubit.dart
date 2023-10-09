@@ -12,24 +12,30 @@ class HomeCubit extends Cubit<HomeState> {
   final BookRepository _bookRepository;
   final logger = Logger();
 
-  void getBooks() async {
+  Future<void> getBooks() async {
+    emit(state.copyWith(loading: true));
     try {
       final userBooks = await _bookRepository.getBooks();
-      emit(state.copyWith(books: userBooks));
+      emit(state.copyWith(books: userBooks, loading: false));
+      print({"checking": userBooks});
     } catch (e) {
+      emit(state.copyWith(books: {}, loading: false));
       logger.e("Error getBooks", error: "$e");
+      print({"checking2"});
     }
   }
 
-  void addBook() async {
+  Future<void> addBook() async {
+    emit(state.copyWith(loading: true));
     try {
       final newBook = await _bookRepository.uploadBook();
       final savedBook = await _bookRepository.addBook(newBook);
       final savedBookMap = <String, Book>{savedBook.id: savedBook};
       final Map<String, Book> savedBooks = Map.of(state.books)
         ..addEntries(savedBookMap.entries);
-      emit(state.copyWith(books: savedBooks));
+      emit(state.copyWith(books: savedBooks, loading: false));
     } catch (e) {
+      emit(state.copyWith(loading: false));
       logger.e("Error addBook", error: "$e");
     }
   }
