@@ -17,11 +17,9 @@ class HomeCubit extends Cubit<HomeState> {
     try {
       final userBooks = await _bookRepository.getBooks();
       emit(state.copyWith(books: userBooks, loading: false));
-      print({"checking": userBooks});
     } catch (e) {
       emit(state.copyWith(books: {}, loading: false));
       logger.e("Error getBooks", error: "$e");
-      print({"checking2"});
     }
   }
 

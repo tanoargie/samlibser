@@ -35,7 +35,6 @@ class HomePage extends StatelessWidget {
           child: Column(mainAxisSize: MainAxisSize.min, children: [
             BlocBuilder<HomeCubit, HomeState>(builder: (context, state) {
               List<Text> listText = [];
-              print(state);
               if (state.loading == false) {
                 for (var book in state.books.entries) {
                   listText.add(Text(state.books[book.key]?.name ?? ''));
