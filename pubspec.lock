@@ -437,7 +437,7 @@ packages:
     source: hosted
     version: "0.2.1+1"
   google_sign_in:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: google_sign_in
       sha256: f45038d27bcad37498f282295ae97eece23c9349fc16649154067b87b9f1fd03

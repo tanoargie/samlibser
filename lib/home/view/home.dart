@@ -3,18 +3,21 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:samlibser/app/bloc/app_bloc.dart';
 import 'package:samlibser/home/cubit/home_cubit.dart';
 import 'package:book_repository/book_repository.dart';
+import 'package:authentication_repository/authentication_repository.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
 
   static Page<void> page() {
-    final bookRepository = BookRepository();
     return MaterialPage<void>(
-        child: RepositoryProvider.value(
-            value: bookRepository,
-            child: BlocProvider<HomeCubit>(
-                create: (_) => HomeCubit(bookRepository)..getBooks(),
-                child: const HomePage())));
+        child: BlocProvider<HomeCubit>(
+            create: (context) {
+              return HomeCubit(BookRepository(
+                  authenticationRepository:
+                      context.read<AuthenticationRepository>()))
+                ..getBooks();
+            },
+            child: const HomePage()));
   }
 
   @override

@@ -2,18 +2,19 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:file_picker/file_picker.dart';
 import 'package:book_repository/models/book.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:authentication_repository/authentication_repository.dart';
 
-abstract class SamserBookRepository {
+class BookRepository {
+  BookRepository({required AuthenticationRepository authenticationRepository})
+      : _authenticationRepository = authenticationRepository;
+
+  final AuthenticationRepository? _authenticationRepository;
+
   final baseUrl = Uri.https(
-      '62f9-2800-40-33-490-7d4e-c70f-43d2-be00.ngrok-free.app', '/api/books');
-}
+      '1f83-2800-40-33-490-b5fa-ec07-9252-5202.ngrok-free.app', '/api/books');
 
-class BookRepository extends SamserBookRepository {
   Future<Map<String, Book>> getBooks() async {
-    var tokenResult =
-        await FirebaseAuth.instance.currentUser?.getIdTokenResult();
-    var token = tokenResult?.token;
+    var token = _authenticationRepository?.currentUser.token;
     var response =
         await http.get(baseUrl, headers: {'Authorization': "Bearer $token"});
     final responseJson = jsonDecode(response.body);
@@ -42,10 +43,8 @@ class BookRepository extends SamserBookRepository {
   }
 
   Future<Book> addBook(PlatformFile bookFile) async {
+    var token = _authenticationRepository?.currentUser.token;
     try {
-      var tokenResult =
-          await FirebaseAuth.instance.currentUser?.getIdTokenResult();
-      var token = tokenResult?.token;
       Map<String, String> headers = {
         "Authorization": "Bearer $token",
         'Content-Type': 'multipart/form-data;',

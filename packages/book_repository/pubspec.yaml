@@ -9,6 +9,8 @@ environment:
 dependencies:
   cache:
     path: ../cache
+  authentication_repository:
+    path: ../authentication_repository
   equatable: ^2.0.5
   file_picker: ^5.5.0
   firebase_auth: ^4.10.0
