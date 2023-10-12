@@ -1,16 +1,15 @@
 import 'package:equatable/equatable.dart';
 
 class Book extends Equatable {
-  const Book(this.id, this.name, this.author);
+  const Book(this.id, this.location);
 
   final String id;
-  final String name;
-  final String author;
+  final String location;
 
   @override
-  List<Object> get props => [id, name, author];
+  List<Object> get props => [id, location];
 
   factory Book.fromJson(Map<String, dynamic> json) {
-    return Book(json['ID'].toString(), json['Name'], json['Author']);
+    return Book(json['ID'].toString(), json['Location']);
   }
 }
