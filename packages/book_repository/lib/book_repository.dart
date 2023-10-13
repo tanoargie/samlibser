@@ -4,6 +4,18 @@ import 'package:file_picker/file_picker.dart';
 import 'package:book_repository/models/book.dart';
 import 'package:authentication_repository/authentication_repository.dart';
 
+class DuplicatedRecord implements Exception {
+  const DuplicatedRecord();
+
+  static String message = "Duplicated book!";
+}
+
+class FileUploadCancelled implements Exception {
+  const FileUploadCancelled();
+
+  static String message = "File picker upload cancelled!";
+}
+
 class BookRepository {
   BookRepository({required AuthenticationRepository authenticationRepository})
       : _authenticationRepository = authenticationRepository;
@@ -42,7 +54,7 @@ class BookRepository {
     if (result != null) {
       return result.files.single;
     } else {
-      throw Exception("Cancelled file picker");
+      throw FileUploadCancelled;
     }
   }
 
@@ -60,6 +72,9 @@ class BookRepository {
       request.files.add(file);
       var streamedResponse = await request.send();
       var response = await http.Response.fromStream(streamedResponse);
+      if (response.statusCode == 409) {
+        throw DuplicatedRecord;
+      }
       final responseJson = jsonDecode(response.body);
       Book book = responseJson.book;
       return book;

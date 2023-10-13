@@ -18,7 +18,8 @@ class HomeCubit extends Cubit<HomeState> {
       final userBooks = await _bookRepository.getBooks();
       emit(state.copyWith(books: userBooks, loading: false));
     } catch (e) {
-      emit(state.copyWith(books: {}, loading: false));
+      emit(state
+          .copyWith(books: {}, loading: false, errorMessage: e.toString()));
       logger.e("Error getBooks", error: "$e");
     }
   }
@@ -32,8 +33,16 @@ class HomeCubit extends Cubit<HomeState> {
       final Map<String, Book> savedBooks = Map.of(state.books)
         ..addEntries(savedBookMap.entries);
       emit(state.copyWith(books: savedBooks, loading: false));
+    } on DuplicatedRecord {
+      emit(state.copyWith(
+          loading: false, errorMessage: DuplicatedRecord.message));
+      logger.e("Error addBook", error: DuplicatedRecord.message);
+    } on FileUploadCancelled {
+      emit(state.copyWith(
+          loading: false, errorMessage: FileUploadCancelled.message));
+      logger.e("Error addBook", error: FileUploadCancelled.message);
     } catch (e) {
-      emit(state.copyWith(loading: false));
+      emit(state.copyWith(loading: false, errorMessage: e.toString()));
       logger.e("Error addBook", error: "$e");
     }
   }
