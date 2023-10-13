@@ -10,23 +10,27 @@ class BookRepository {
 
   final AuthenticationRepository? _authenticationRepository;
 
-  final baseUrl = Uri.https(
-      '1f83-2800-40-33-490-b5fa-ec07-9252-5202.ngrok-free.app', '/api/books');
+  final baseUrl =
+      Uri.https(const String.fromEnvironment('BASE_URL'), '/api/books');
 
   Future<Map<String, Book>> getBooks() async {
     var token = _authenticationRepository?.currentUser.token;
-    var response =
-        await http.get(baseUrl, headers: {'Authorization': "Bearer $token"});
-    final responseJson = jsonDecode(response.body);
-    List<dynamic> userBooks = responseJson["data"];
-    Map<String, Book> userBooksMap = <String, Book>{};
-    for (int loop = 0; loop < userBooks.length; loop++) {
-      userBooksMap.addEntries([
-        MapEntry(userBooks.elementAt(loop)["ID"].toString(),
-            Book.fromJson(userBooks.elementAt(loop)))
-      ]);
+    try {
+      var response =
+          await http.get(baseUrl, headers: {'Authorization': "Bearer $token"});
+      final responseJson = jsonDecode(response.body);
+      List<dynamic> userBooks = responseJson["data"];
+      Map<String, Book> userBooksMap = <String, Book>{};
+      for (int loop = 0; loop < userBooks.length; loop++) {
+        userBooksMap.addEntries([
+          MapEntry(userBooks.elementAt(loop)["ID"].toString(),
+              Book.fromJson(userBooks.elementAt(loop)))
+        ]);
+      }
+      return userBooksMap;
+    } catch (err) {
+      throw err;
     }
-    return userBooksMap;
   }
 
   Future<PlatformFile> uploadBook() async {
@@ -60,7 +64,7 @@ class BookRepository {
       Book book = responseJson.book;
       return book;
     } catch (err) {
-      throw Exception("error");
+      throw err;
     }
   }
 }
