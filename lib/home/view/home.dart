@@ -4,6 +4,9 @@ import 'package:samlibser/app/bloc/app_bloc.dart';
 import 'package:samlibser/home/cubit/home_cubit.dart';
 import 'package:book_repository/book_repository.dart';
 import 'package:authentication_repository/authentication_repository.dart';
+import 'package:internet_file/internet_file.dart';
+import 'package:epub_view/epub_view.dart';
+import 'package:samlibser/widgets/book_card.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -18,6 +21,12 @@ class HomePage extends StatelessWidget {
                 ..getBooks();
             },
             child: const HomePage()));
+  }
+
+  Future<EpubBook> calculation(link) async {
+    var file = await InternetFile.get(
+        "https://storage.cloud.google.com/samlibser/$link");
+    return EpubDocument.openData(file);
   }
 
   @override
@@ -36,11 +45,20 @@ class HomePage extends StatelessWidget {
         body: Align(
           alignment: const Alignment(0, -1 / 3),
           child: Column(mainAxisSize: MainAxisSize.min, children: [
-            BlocBuilder<HomeCubit, HomeState>(builder: (context, state) {
-              List<Text> listText = [];
+            BlocListener<HomeCubit, HomeState>(listener: (context, state) {
+              if (state.errorMessage.toString() != "") {
+                ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text(state.errorMessage.toString())));
+              }
+            }, child:
+                BlocBuilder<HomeCubit, HomeState>(builder: (context, state) {
+              List<String> listText = [];
               if (state.loading == false) {
                 for (var book in state.books.entries) {
-                  listText.add(Text(state.books[book.key]?.name ?? ''));
+                  listText.add(state.books[book.key]?.location ?? '');
+                }
+                if (listText.isEmpty) {
+                  return const Text('No books!');
                 }
                 return ListView.builder(
                     padding: const EdgeInsets.all(8),
@@ -48,14 +66,24 @@ class HomePage extends StatelessWidget {
                     scrollDirection: Axis.vertical,
                     shrinkWrap: true,
                     itemBuilder: (BuildContext context, int index) {
-                      return SizedBox(
-                        height: 50,
-                        child: listText[index],
-                      );
+                      return FutureBuilder<EpubBook>(
+                          future: calculation(listText[index]),
+                          builder:
+                              (BuildContext context, AsyncSnapshot snapshot) {
+                            if (snapshot.hasData) {
+                              return BookCard(
+                                epubBook: snapshot.data,
+                              );
+                            } else if (snapshot.hasError) {
+                              return const Text(
+                                  "There was an error getting book links");
+                            }
+                            return const CircularProgressIndicator();
+                          });
                     });
               }
               return const Center(child: CircularProgressIndicator());
-            })
+            })),
           ]),
         ),
         floatingActionButton:

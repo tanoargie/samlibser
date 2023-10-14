@@ -8,7 +8,7 @@ final class HomeState extends Equatable {
 
   final Map<String, Book> books;
   final bool loading;
-  final String? errorMessage;
+  final String errorMessage;
 
   @override
   List<Object?> get props => [books, loading, errorMessage];
@@ -18,6 +18,6 @@ final class HomeState extends Equatable {
     return HomeState(
         books: books ?? this.books,
         loading: loading,
-        errorMessage: errorMessage);
+        errorMessage: errorMessage ?? this.errorMessage);
   }
 }

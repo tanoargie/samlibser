@@ -54,7 +54,7 @@ class BookRepository {
     if (result != null) {
       return result.files.single;
     } else {
-      throw FileUploadCancelled;
+      throw FileUploadCancelled();
     }
   }
 
@@ -73,7 +73,7 @@ class BookRepository {
       var streamedResponse = await request.send();
       var response = await http.Response.fromStream(streamedResponse);
       if (response.statusCode == 409) {
-        throw DuplicatedRecord;
+        throw DuplicatedRecord();
       }
       final responseJson = jsonDecode(response.body);
       Book book = responseJson.book;
