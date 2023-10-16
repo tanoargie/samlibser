@@ -2,26 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:epub_view/epub_view.dart';
 import 'package:flutter/widgets.dart' as image_widget;
 import 'package:image/image.dart' as image_ui;
-import 'dart:ui';
 import 'dart:typed_data';
 
 class BookCard extends StatelessWidget {
   const BookCard({super.key, required this.epubBook});
 
   final EpubBook epubBook;
-
-  Future<bool> isImageValid(List<int> rawList) async {
-    final uInt8List =
-        rawList is Uint8List ? rawList : Uint8List.fromList(rawList);
-
-    try {
-      final codec = await instantiateImageCodec(uInt8List, targetWidth: 32);
-      final frameInfo = await codec.getNextFrame();
-      return frameInfo.image.width > 0;
-    } catch (e) {
-      return false;
-    }
-  }
 
   getImage(image_ui.Image? img) {
     if (img != null) {
