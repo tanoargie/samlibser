@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:epub_view/epub_view.dart';
 
 class ReadingScreen extends StatelessWidget {
-  const ReadingScreen({super.key, required this.bookPath});
+  const ReadingScreen({super.key, required this.book});
 
-  final String bookPath;
+  final EpubBook book;
 
   @override
   Widget build(BuildContext context) {
     final EpubController epubController =
-        EpubController(document: EpubDocument.openAsset(bookPath));
+        EpubController(document: Future.value(book));
 
     return Scaffold(
       appBar: AppBar(

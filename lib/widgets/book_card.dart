@@ -4,6 +4,8 @@ import 'package:flutter/widgets.dart' as image_widget;
 import 'package:image/image.dart' as image_ui;
 import 'dart:typed_data';
 
+import 'package:samlibser/widgets/reader.dart';
+
 class BookCard extends StatelessWidget {
   const BookCard({super.key, required this.epubBook});
 
@@ -23,21 +25,27 @@ class BookCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
-        margin: const EdgeInsets.all(15),
-        elevation: 10,
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(30),
-          child: Column(
-            children: [
-              getImage(epubBook.CoverImage),
-              Container(
-                padding: const EdgeInsets.all(10),
-                child: Text(epubBook.Title ?? ''),
+    return GestureDetector(
+        onTap: () => Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => ReadingScreen(book: epubBook))),
+        child: Card(
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+            margin: const EdgeInsets.all(15),
+            elevation: 10,
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(30),
+              child: Column(
+                children: [
+                  getImage(epubBook.CoverImage),
+                  Container(
+                    padding: const EdgeInsets.all(10),
+                    child: Text(epubBook.Title ?? ''),
+                  ),
+                ],
               ),
-            ],
-          ),
-        ));
+            )));
   }
 }
