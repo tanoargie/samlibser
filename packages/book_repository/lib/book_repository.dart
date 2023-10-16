@@ -25,18 +25,18 @@ class BookRepository {
   final baseUrl =
       Uri.https(const String.fromEnvironment('BASE_URL'), '/api/books');
 
-  Future<Map<String, Book>> getBooks() async {
+  Future<Map<String, String>> getBooks() async {
     var token = _authenticationRepository?.currentUser.token;
     try {
       var response =
           await http.get(baseUrl, headers: {'Authorization': "Bearer $token"});
       final responseJson = jsonDecode(response.body);
-      List<dynamic> userBooks = responseJson["data"];
-      Map<String, Book> userBooksMap = <String, Book>{};
+      List<dynamic> userBooks = responseJson["data"] ?? [];
+      Map<String, String> userBooksMap = <String, String>{};
       for (int loop = 0; loop < userBooks.length; loop++) {
         userBooksMap.addEntries([
           MapEntry(userBooks.elementAt(loop)["ID"].toString(),
-              Book.fromJson(userBooks.elementAt(loop)))
+              userBooks.elementAt(loop)["URL"])
         ]);
       }
       return userBooksMap;
@@ -76,7 +76,7 @@ class BookRepository {
         throw DuplicatedRecord();
       }
       final responseJson = jsonDecode(response.body);
-      Book book = responseJson.book;
+      Book book = Book.fromJson(responseJson['data']);
       return book;
     } catch (err) {
       throw err;

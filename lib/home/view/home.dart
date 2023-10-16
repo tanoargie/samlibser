@@ -24,8 +24,7 @@ class HomePage extends StatelessWidget {
   }
 
   Future<EpubBook> calculation(link) async {
-    var file = await InternetFile.get(
-        "https://storage.cloud.google.com/samlibser/$link");
+    var file = await InternetFile.get("$link");
     return EpubDocument.openData(file);
   }
 
@@ -52,22 +51,22 @@ class HomePage extends StatelessWidget {
               }
             }, child:
                 BlocBuilder<HomeCubit, HomeState>(builder: (context, state) {
-              List<String> listText = [];
+              List<String> listUrls = [];
               if (state.loading == false) {
                 for (var book in state.books.entries) {
-                  listText.add(state.books[book.key]?.location ?? '');
+                  listUrls.add(state.books[book.key] ?? '');
                 }
-                if (listText.isEmpty) {
+                if (listUrls.isEmpty) {
                   return const Text('No books!');
                 }
                 return ListView.builder(
                     padding: const EdgeInsets.all(8),
-                    itemCount: listText.length,
+                    itemCount: listUrls.length,
                     scrollDirection: Axis.vertical,
                     shrinkWrap: true,
                     itemBuilder: (BuildContext context, int index) {
                       return FutureBuilder<EpubBook>(
-                          future: calculation(listText[index]),
+                          future: calculation(listUrls[index]),
                           builder:
                               (BuildContext context, AsyncSnapshot snapshot) {
                             if (snapshot.hasData) {
