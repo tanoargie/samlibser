@@ -4,13 +4,18 @@ import 'package:samlibser/home/view/home.dart';
 import 'package:samlibser/login/view/login.dart';
 
 List<Page<dynamic>> onGenerateAppViewPages(
-  AppStatus state,
+  AppState state,
   List<Page<dynamic>> pages,
 ) {
-  switch (state) {
-    case AppStatus.authenticated:
-      return [HomePage.page()];
-    case AppStatus.unauthenticated:
-      return [LoginPage.page()];
+  if (state.status == AppStatus.authenticated && state.selectedMenuIndex == 0) {
+    return [HomePage.page()];
+  } else if (state.status == AppStatus.authenticated &&
+      state.selectedMenuIndex == 1) {
+    return [HomePage.page()];
+  } else if (state.status == AppStatus.unauthenticated) {
+    return [LoginPage.page()];
+  } else {
+    return [LoginPage.page()];
   }
 }
+

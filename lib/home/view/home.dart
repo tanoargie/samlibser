@@ -51,11 +51,8 @@ class HomePage extends StatelessWidget {
               }
             }, child:
                 BlocBuilder<HomeCubit, HomeState>(builder: (context, state) {
-              List<String> listUrls = [];
               if (state.loading == false) {
-                for (var book in state.books.entries) {
-                  listUrls.add(state.books[book.key] ?? '');
-                }
+                List<String> listUrls = state.books.values.toList();
                 if (listUrls.isEmpty) {
                   return const Text('No books!');
                 }
@@ -85,6 +82,21 @@ class HomePage extends StatelessWidget {
             })),
           ]),
         ),
+        bottomNavigationBar: BottomNavigationBar(
+            items: const <BottomNavigationBarItem>[
+              BottomNavigationBarItem(
+                icon: Icon(Icons.library_books),
+                label: 'Library',
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.account_circle),
+                label: 'Account',
+              ),
+            ],
+            currentIndex: context.read<AppBloc>().state.selectedMenuIndex,
+            selectedItemColor: Colors.amber[800],
+            onTap: (int newIndex) =>
+                context.read<AppBloc>().add(AppSelectedIndex(newIndex))),
         floatingActionButton:
             BlocBuilder<HomeCubit, HomeState>(builder: (context, state) {
           return FloatingActionButton(
