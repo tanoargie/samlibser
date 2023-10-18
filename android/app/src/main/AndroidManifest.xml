@@ -2,6 +2,7 @@
     <application
         android:label="samlibser"
         android:name="${applicationName}"
+        android:roundIcon="mipmap/round_samlibser"
         android:icon="@mipmap/ic_launcher">
         <activity
             android:name=".MainActivity"
