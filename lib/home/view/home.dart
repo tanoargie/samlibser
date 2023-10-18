@@ -74,7 +74,8 @@ class HomePage extends StatelessWidget {
                               return const Text(
                                   "There was an error getting book links");
                             }
-                            return const CircularProgressIndicator();
+                            return const Center(
+                                child: CircularProgressIndicator());
                           });
                     });
               }
