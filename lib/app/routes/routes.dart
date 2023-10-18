@@ -1,4 +1,5 @@
 import 'package:flutter/widgets.dart';
+import 'package:samlibser/account/view/account.dart';
 import 'package:samlibser/app/bloc/app_bloc.dart';
 import 'package:samlibser/home/view/home.dart';
 import 'package:samlibser/login/view/login.dart';
@@ -11,7 +12,7 @@ List<Page<dynamic>> onGenerateAppViewPages(
     return [HomePage.page()];
   } else if (state.status == AppStatus.authenticated &&
       state.selectedMenuIndex == 1) {
-    return [HomePage.page()];
+    return [AccountPage.page()];
   } else if (state.status == AppStatus.unauthenticated) {
     return [LoginPage.page()];
   } else {
