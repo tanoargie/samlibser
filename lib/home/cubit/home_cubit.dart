@@ -1,5 +1,4 @@
 import 'package:logger/logger.dart';
-import 'package:book_repository/models/book.dart';
 import 'package:book_repository/book_repository.dart';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';

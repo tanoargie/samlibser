@@ -11,6 +11,8 @@ class AccountPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final user = context.select((AppBloc bloc) => bloc.state.user);
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Account'),
@@ -22,7 +24,18 @@ class AccountPage extends StatelessWidget {
                   context.read<AppBloc>().add(const AppLogoutRequested()))
         ],
       ),
-      body: const Align(alignment: Alignment.center, child: Text('test')),
+      body: Align(
+        alignment: Alignment.center,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            const SizedBox(height: 4),
+            Text(user.email ?? ''),
+            const SizedBox(height: 4),
+            Text(user.name ?? ''),
+          ],
+        ),
+      ),
       bottomNavigationBar: BottomNavigationBar(
           items: const <BottomNavigationBarItem>[
             BottomNavigationBarItem(

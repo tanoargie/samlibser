@@ -40,7 +40,7 @@ class AppBloc extends Bloc<AppEvent, AppState> {
   }
 
   void _onChangeSelectedIndex(AppSelectedIndex event, Emitter<AppState> emit) {
-    emit(AppState.changeSelectedIndex(event.selectedMenuIndex));
+    emit(state.changeSelectedIndex(event.selectedMenuIndex));
   }
 
   @override

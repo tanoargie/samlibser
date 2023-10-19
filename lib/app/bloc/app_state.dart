@@ -16,8 +16,12 @@ final class AppState extends Equatable {
 
   const AppState.unauthenticated() : this._(status: AppStatus.unauthenticated);
 
-  const AppState.changeSelectedIndex(int newIndex)
-      : this._(status: AppStatus.authenticated, selectedMenuIndex: newIndex);
+  AppState changeSelectedIndex(int newIndex) {
+    return AppState._(
+        status: AppStatus.authenticated,
+        user: user,
+        selectedMenuIndex: newIndex);
+  }
 
   final AppStatus status;
   final User user;
