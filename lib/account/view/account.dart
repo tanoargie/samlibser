@@ -31,8 +31,6 @@ class AccountPage extends StatelessWidget {
           children: <Widget>[
             const SizedBox(height: 4),
             Text(user.email ?? ''),
-            const SizedBox(height: 4),
-            Text(user.name ?? ''),
           ],
         ),
       ),
