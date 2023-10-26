@@ -13,7 +13,7 @@ class DuplicatedRecord implements Exception {
 class FileUploadCancelled implements Exception {
   const FileUploadCancelled();
 
-  static String message = "File picker upload cancelled!";
+  static String message = "Cancelled upload";
 }
 
 class BookRepository {
