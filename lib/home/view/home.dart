@@ -23,9 +23,14 @@ class HomePage extends StatelessWidget {
             child: const HomePage()));
   }
 
-  Future<EpubBook> calculation(link) async {
-    var file = await InternetFile.get("$link");
-    return EpubDocument.openData(file);
+  Future<List<EpubBook>> calculation(List<String> links) async {
+    List<EpubBook> books = [];
+    for (final link in links) {
+      var file = await InternetFile.get(link);
+      var book = await EpubDocument.openData(file);
+      books.add(book);
+    }
+    return books;
   }
 
   @override
@@ -56,28 +61,29 @@ class HomePage extends StatelessWidget {
                 if (listUrls.isEmpty) {
                   return const Text('No books!');
                 }
-                return ListView.builder(
-                    padding: const EdgeInsets.all(8),
-                    itemCount: listUrls.length,
-                    scrollDirection: Axis.vertical,
-                    shrinkWrap: true,
-                    itemBuilder: (BuildContext context, int index) {
-                      return FutureBuilder<EpubBook>(
-                          future: calculation(listUrls[index]),
-                          builder:
-                              (BuildContext context, AsyncSnapshot snapshot) {
-                            if (snapshot.hasData) {
-                              return BookCard(
-                                epubBook: snapshot.data,
-                              );
-                            } else if (snapshot.hasError) {
-                              return const Text(
-                                  "There was an error getting book links");
-                            }
-                            return const Center(
-                                child: CircularProgressIndicator());
-                          });
-                    });
+                return Expanded(
+                    child: FutureBuilder(
+                        future: calculation(listUrls),
+                        builder:
+                            (BuildContext context, AsyncSnapshot snapshot) {
+                          if (snapshot.hasData) {
+                            return ListView.builder(
+                                padding: const EdgeInsets.all(8),
+                                itemCount: listUrls.length,
+                                scrollDirection: Axis.vertical,
+                                shrinkWrap: true,
+                                itemBuilder: (BuildContext context, int index) {
+                                  return BookCard(
+                                    epubBook: snapshot.data[index],
+                                  );
+                                });
+                          } else if (snapshot.hasError) {
+                            return const Text(
+                                "There was an error getting book links");
+                          }
+                          return const Center(
+                              child: CircularProgressIndicator());
+                        }));
               }
               return const Center(child: CircularProgressIndicator());
             })),
