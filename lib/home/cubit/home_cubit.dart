@@ -12,7 +12,7 @@ class HomeCubit extends Cubit<HomeState> {
   final logger = Logger();
 
   Future<void> getBooks() async {
-    emit(state.copyWith(loading: true));
+    emit(state.copyWith(loading: true, errorMessage: ""));
     try {
       final userBooks = await _bookRepository.getBooks();
       emit(state.copyWith(books: userBooks, loading: false));
@@ -23,7 +23,7 @@ class HomeCubit extends Cubit<HomeState> {
   }
 
   Future<void> addBook() async {
-    emit(state.copyWith(loading: true));
+    emit(state.copyWith(loading: true, errorMessage: ""));
     try {
       final newBook = await _bookRepository.uploadBook();
       final savedBook = await _bookRepository.addBook(newBook);
