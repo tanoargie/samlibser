@@ -48,7 +48,7 @@ class DefaultFirebaseOptions {
     appId: '1:782236620420:web:70fe95b9b48ff86c0854d1',
     messagingSenderId: '782236620420',
     projectId: 'samlibser-2bf1e',
-    authDomain: 'samlibser-2bf1e.firebaseapp.com',
+    authDomain: 'samlibser.samser.co',
     storageBucket: 'samlibser-2bf1e.appspot.com',
   );
 
@@ -66,8 +66,10 @@ class DefaultFirebaseOptions {
     messagingSenderId: '782236620420',
     projectId: 'samlibser-2bf1e',
     storageBucket: 'samlibser-2bf1e.appspot.com',
-    androidClientId: '782236620420-0dtsmt0g238jsbqagfqqtimbi78b90m3.apps.googleusercontent.com',
-    iosClientId: '782236620420-s9fvvcmtl7kl0sg7b0o0nlao0ps75bc6.apps.googleusercontent.com',
+    androidClientId:
+        '782236620420-0dtsmt0g238jsbqagfqqtimbi78b90m3.apps.googleusercontent.com',
+    iosClientId:
+        '782236620420-s9fvvcmtl7kl0sg7b0o0nlao0ps75bc6.apps.googleusercontent.com',
     iosBundleId: 'com.example.samlibser',
   );
 
@@ -77,8 +79,10 @@ class DefaultFirebaseOptions {
     messagingSenderId: '782236620420',
     projectId: 'samlibser-2bf1e',
     storageBucket: 'samlibser-2bf1e.appspot.com',
-    androidClientId: '782236620420-0dtsmt0g238jsbqagfqqtimbi78b90m3.apps.googleusercontent.com',
-    iosClientId: '782236620420-415d1qo80du7s7e2en75ki3fonprn97g.apps.googleusercontent.com',
+    androidClientId:
+        '782236620420-0dtsmt0g238jsbqagfqqtimbi78b90m3.apps.googleusercontent.com',
+    iosClientId:
+        '782236620420-415d1qo80du7s7e2en75ki3fonprn97g.apps.googleusercontent.com',
     iosBundleId: 'com.example.samlibser.RunnerTests',
   );
 }
