@@ -2,12 +2,12 @@ part of 'home_cubit.dart';
 
 final class HomeState extends Equatable {
   const HomeState(
-      {this.books = const <String, String>{},
+      {this.books = const <String, EpubBook>{},
       this.loading = false,
       this.errorMessage = ""});
 
   // map id -> signedURL
-  final Map<String, String> books;
+  final Map<String, EpubBook> books;
   final bool loading;
   final String errorMessage;
 
@@ -15,7 +15,7 @@ final class HomeState extends Equatable {
   List<Object?> get props => [books, loading, errorMessage];
 
   HomeState copyWith(
-      {Map<String, String>? books,
+      {Map<String, EpubBook>? books,
       required bool loading,
       String? errorMessage}) {
     return HomeState(

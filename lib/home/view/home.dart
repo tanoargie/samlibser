@@ -1,11 +1,10 @@
+import 'package:epub_view/epub_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:samlibser/app/bloc/app_bloc.dart';
 import 'package:samlibser/home/cubit/home_cubit.dart';
 import 'package:book_repository/book_repository.dart';
 import 'package:authentication_repository/authentication_repository.dart';
-import 'package:internet_file/internet_file.dart';
-import 'package:epub_view/epub_view.dart';
 import 'package:samlibser/widgets/book_card.dart';
 
 class HomePage extends StatelessWidget {
@@ -21,16 +20,6 @@ class HomePage extends StatelessWidget {
                 ..getBooks();
             },
             child: const HomePage()));
-  }
-
-  Future<List<EpubBook>> calculation(List<String> links) async {
-    List<EpubBook> books = [];
-    for (final link in links) {
-      var file = await InternetFile.get(link);
-      var book = await EpubDocument.openData(file);
-      books.add(book);
-    }
-    return books;
   }
 
   @override
@@ -56,36 +45,44 @@ class HomePage extends StatelessWidget {
               }
             }, child:
                 BlocBuilder<HomeCubit, HomeState>(builder: (context, state) {
+              List<EpubBook> listEpubs = state.books.values.toList();
+              print(state.loading);
+              print(listEpubs.length);
               if (state.loading == false) {
-                List<String> listUrls = state.books.values.toList();
-                if (listUrls.isEmpty) {
+                if (listEpubs.isEmpty) {
                   return const Text('No books!');
                 }
+                if (state.errorMessage.isNotEmpty) {
+                  return const Text("There was an error getting book links");
+                }
                 return Expanded(
-                    child: FutureBuilder(
-                        future: calculation(listUrls),
-                        builder:
-                            (BuildContext context, AsyncSnapshot snapshot) {
-                          if (snapshot.hasData) {
-                            return ListView.builder(
-                                padding: const EdgeInsets.all(8),
-                                itemCount: listUrls.length,
-                                scrollDirection: Axis.vertical,
-                                shrinkWrap: true,
-                                itemBuilder: (BuildContext context, int index) {
-                                  return BookCard(
-                                    epubBook: snapshot.data[index],
-                                  );
-                                });
-                          } else if (snapshot.hasError) {
-                            return const Text(
-                                "There was an error getting book links");
-                          }
-                          return const Center(
-                              child: CircularProgressIndicator());
+                    child: ListView.builder(
+                        padding: const EdgeInsets.all(8),
+                        itemCount: listEpubs.length,
+                        scrollDirection: Axis.vertical,
+                        shrinkWrap: true,
+                        itemBuilder: (BuildContext context, int index) {
+                          return BookCard(
+                            epubBook: listEpubs[index],
+                          );
                         }));
+              } else {
+                if (listEpubs.isNotEmpty) {
+                  return Expanded(
+                      child: ListView.builder(
+                          padding: const EdgeInsets.all(8),
+                          itemCount: listEpubs.length,
+                          scrollDirection: Axis.vertical,
+                          shrinkWrap: true,
+                          itemBuilder: (BuildContext context, int index) {
+                            return BookCard(
+                              epubBook: listEpubs[index],
+                            );
+                          }));
+                } else {
+                  return const Center(child: CircularProgressIndicator());
+                }
               }
-              return const Center(child: CircularProgressIndicator());
             })),
           ]),
         ),

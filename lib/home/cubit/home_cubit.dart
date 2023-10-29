@@ -1,3 +1,4 @@
+import 'package:epub_view/epub_view.dart';
 import 'package:logger/logger.dart';
 import 'package:book_repository/book_repository.dart';
 import 'package:bloc/bloc.dart';
@@ -27,9 +28,8 @@ class HomeCubit extends Cubit<HomeState> {
     try {
       final newBook = await _bookRepository.uploadBook();
       final savedBook = await _bookRepository.addBook(newBook);
-      final savedBookMap = <String, String>{savedBook.id: savedBook.url};
-      final Map<String, String> savedBooks = Map.of(state.books)
-        ..addEntries(savedBookMap.entries);
+      final Map<String, EpubBook> savedBooks = Map.of(state.books)
+        ..addAll(savedBook);
       emit(state.copyWith(books: savedBooks, loading: false));
     } on DuplicatedRecord {
       emit(state.copyWith(
