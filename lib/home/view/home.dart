@@ -4,7 +4,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:samlibser/app/bloc/app_bloc.dart';
 import 'package:samlibser/home/cubit/home_cubit.dart';
 import 'package:book_repository/book_repository.dart';
-import 'package:authentication_repository/authentication_repository.dart';
 import 'package:samlibser/widgets/book_card.dart';
 
 class HomePage extends StatelessWidget {
@@ -14,10 +13,7 @@ class HomePage extends StatelessWidget {
     return MaterialPage<void>(
         child: BlocProvider<HomeCubit>(
             create: (context) {
-              return HomeCubit(BookRepository(
-                  authenticationRepository:
-                      context.read<AuthenticationRepository>()))
-                ..getBooks();
+              return HomeCubit(context.read<BookRepository>())..getBooks();
             },
             child: const HomePage()));
   }
@@ -46,8 +42,6 @@ class HomePage extends StatelessWidget {
             }, child:
                 BlocBuilder<HomeCubit, HomeState>(builder: (context, state) {
               List<EpubBook> listEpubs = state.books.values.toList();
-              print(state.loading);
-              print(listEpubs.length);
               if (state.loading == false) {
                 if (listEpubs.isEmpty) {
                   return const Text('No books!');

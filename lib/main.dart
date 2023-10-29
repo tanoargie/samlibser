@@ -1,5 +1,6 @@
 import 'package:authentication_repository/authentication_repository.dart';
 import 'package:bloc/bloc.dart';
+import 'package:book_repository/book_repository.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/widgets.dart';
 import 'package:samlibser/app/view/app.dart';
@@ -15,5 +16,10 @@ Future<void> main() async {
   final authenticationRepository = AuthenticationRepository();
   await authenticationRepository.user.first;
 
-  runApp(App(authenticationRepository: authenticationRepository));
+  final bookRepository =
+      BookRepository(authenticationRepository: authenticationRepository);
+
+  runApp(App(
+      authenticationRepository: authenticationRepository,
+      bookRepository: bookRepository));
 }

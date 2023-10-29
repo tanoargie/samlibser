@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:cache/cache.dart';
 import 'package:http/http.dart' as http;
 import 'package:file_picker/file_picker.dart';
 import 'package:epub_view/epub_view.dart';
@@ -19,16 +20,30 @@ class FileUploadCancelled implements Exception {
 }
 
 class BookRepository {
-  BookRepository({required AuthenticationRepository authenticationRepository})
-      : _authenticationRepository = authenticationRepository;
+  BookRepository(
+      {required AuthenticationRepository authenticationRepository,
+      CacheClient? cache})
+      : _authenticationRepository = authenticationRepository,
+        _cache = cache ?? CacheClient();
 
+  final CacheClient _cache;
   final AuthenticationRepository? _authenticationRepository;
 
   final baseUrl =
       Uri.https(const String.fromEnvironment('BASE_URL'), '/api/books');
 
+  static const booksCacheKey = '__books_cache_key__';
+
+  Map<String, EpubBook> getCurrentBooks() {
+    return _cache.read<Map<String, EpubBook>>(key: booksCacheKey) ?? Map();
+  }
+
   Future<Map<String, EpubBook>> getBooks() async {
     var token = _authenticationRepository?.currentUser.token;
+    var currentEpubs = getCurrentBooks();
+    if (currentEpubs.isNotEmpty) {
+      return currentEpubs;
+    }
     try {
       var response =
           await http.get(baseUrl, headers: {'Authorization': "Bearer $token"});
@@ -42,6 +57,7 @@ class BookRepository {
         final book = await EpubDocument.openData(file);
         userBooksMap.addEntries([MapEntry(id, book)]);
       }
+      _cache.write(key: booksCacheKey, value: userBooksMap);
       return userBooksMap;
     } catch (err) {
       throw err;
