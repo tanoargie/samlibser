@@ -6,6 +6,7 @@ import 'package:epub_view/epub_view.dart';
 import 'package:internet_file/internet_file.dart';
 import 'package:book_repository/models/book.dart';
 import 'package:authentication_repository/authentication_repository.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 
 class DuplicatedRecord implements Exception {
   const DuplicatedRecord();
@@ -85,8 +86,15 @@ class BookRepository {
         'Content-Type': 'multipart/form-data;',
       };
       var request = http.MultipartRequest('POST', baseUrl);
-      var file = await http.MultipartFile.fromPath('file', bookFile.path ?? "",
-          filename: bookFile.name);
+      var file;
+      if (kIsWeb) {
+        file = await http.MultipartFile.fromBytes(
+            'file', bookFile.bytes?.toList() ?? [],
+            filename: bookFile.name);
+      } else {
+        file = await http.MultipartFile.fromPath('file', bookFile.path ?? "",
+            filename: bookFile.name);
+      }
       request.headers.addAll(headers);
       request.files.add(file);
       var streamedResponse = await request.send();
