@@ -61,21 +61,7 @@ class HomePage extends StatelessWidget {
                           );
                         }));
               } else {
-                if (listEpubs.isNotEmpty) {
-                  return Expanded(
-                      child: ListView.builder(
-                          padding: const EdgeInsets.all(8),
-                          itemCount: listEpubs.length,
-                          scrollDirection: Axis.vertical,
-                          shrinkWrap: true,
-                          itemBuilder: (BuildContext context, int index) {
-                            return BookCard(
-                              epubBook: listEpubs[index],
-                            );
-                          }));
-                } else {
-                  return const Center(child: CircularProgressIndicator());
-                }
+                return const Center(child: CircularProgressIndicator());
               }
             })),
           ]),
