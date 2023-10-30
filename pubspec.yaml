@@ -57,6 +57,7 @@ dependencies:
   formz: ^0.6.1
   logger: ^2.0.2+1
   image: ^3.3.0
+  flutter_layout_grid: ^2.0.5
 
 dev_dependencies:
   flutter_test:

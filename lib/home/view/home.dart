@@ -5,6 +5,7 @@ import 'package:samlibser/app/bloc/app_bloc.dart';
 import 'package:samlibser/home/cubit/home_cubit.dart';
 import 'package:book_repository/book_repository.dart';
 import 'package:samlibser/widgets/book_card.dart';
+import 'package:flutter_layout_grid/flutter_layout_grid.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -16,6 +17,26 @@ class HomePage extends StatelessWidget {
               return HomeCubit(context.read<BookRepository>())..getBooks();
             },
             child: const HomePage()));
+  }
+
+  getColumnSizes(Size screenSize) {
+    if (screenSize.width > 768) {
+      return [1.fr, 1.fr, 1.fr, 1.fr];
+    } else if (screenSize.width > 480) {
+      return [1.fr, 1.fr];
+    } else {
+      return [1.fr];
+    }
+  }
+
+  getRowSizes(Size screenSize) {
+    if (screenSize.width > 768) {
+      return [auto, auto, auto, auto];
+    } else if (screenSize.width > 480) {
+      return [auto, auto];
+    } else {
+      return [auto];
+    }
   }
 
   @override
@@ -49,17 +70,19 @@ class HomePage extends StatelessWidget {
                 if (state.errorMessage.isNotEmpty) {
                   return const Text("There was an error getting book links");
                 }
-                return Expanded(
-                    child: ListView.builder(
-                        padding: const EdgeInsets.all(8),
-                        itemCount: listEpubs.length,
-                        scrollDirection: Axis.vertical,
-                        shrinkWrap: true,
-                        itemBuilder: (BuildContext context, int index) {
-                          return BookCard(
-                            epubBook: listEpubs[index],
-                          );
-                        }));
+                return CustomScrollView(slivers: [
+                  SliverToBoxAdapter(
+                      child: LayoutGrid(
+                    columnSizes: getColumnSizes(MediaQuery.sizeOf(context)),
+                    rowSizes: getRowSizes(MediaQuery.sizeOf(context)),
+                    rowGap: 40,
+                    columnGap: 24,
+                    children: [
+                      for (var i = 0; i < listEpubs.length; i++)
+                        BookCard(epubBook: listEpubs[i]),
+                    ],
+                  )),
+                ], shrinkWrap: true);
               } else {
                 return const Center(child: CircularProgressIndicator());
               }
