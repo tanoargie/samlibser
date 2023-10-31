@@ -43,6 +43,10 @@ class HomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
+          leading: IconButton(
+              key: const Key('homePage_refresh_iconButton'),
+              icon: const Icon(Icons.refresh),
+              onPressed: () => context.read<HomeCubit>().getBooksFromServer()),
           title: const Text('Home'),
           actions: <Widget>[
             IconButton(
@@ -54,15 +58,17 @@ class HomePage extends StatelessWidget {
         ),
         body: Align(
           alignment: const Alignment(0, -1 / 3),
-          child: Column(mainAxisSize: MainAxisSize.min, children: [
-            BlocListener<HomeCubit, HomeState>(listener: (context, state) {
+          child: Container(
+            alignment: Alignment.topCenter,
+            child: BlocListener<HomeCubit, HomeState>(listener:
+                (context, state) {
               if (state.errorMessage.toString() != "") {
                 ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(content: Text(state.errorMessage.toString())));
               }
             }, child:
                 BlocBuilder<HomeCubit, HomeState>(builder: (context, state) {
-              List<EpubBook> listEpubs = state.books.values.toList();
+              List<EpubBook> listEpubs = state.books?.values.toList() ?? [];
               if (state.loading == false) {
                 if (listEpubs.isEmpty) {
                   return const Text('No books!');
@@ -87,7 +93,7 @@ class HomePage extends StatelessWidget {
                 return const Center(child: CircularProgressIndicator());
               }
             })),
-          ]),
+          ),
         ),
         bottomNavigationBar: BottomNavigationBar(
             items: const <BottomNavigationBarItem>[

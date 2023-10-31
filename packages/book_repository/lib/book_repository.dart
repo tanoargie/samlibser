@@ -35,16 +35,12 @@ class BookRepository {
 
   static const booksCacheKey = '__books_cache_key__';
 
-  Map<String, EpubBook> getCurrentBooks() {
-    return _cache.read<Map<String, EpubBook>>(key: booksCacheKey) ?? Map();
+  Map<String, EpubBook>? getCachedBooks() {
+    return _cache.read<Map<String, EpubBook>>(key: booksCacheKey) ?? null;
   }
 
-  Future<Map<String, EpubBook>> getBooks() async {
+  Future<Map<String, EpubBook>> getBooksFromServer() async {
     var token = _authenticationRepository?.currentUser.token;
-    var currentEpubs = getCurrentBooks();
-    if (currentEpubs.isNotEmpty) {
-      return currentEpubs;
-    }
     try {
       var response =
           await http.get(baseUrl, headers: {'Authorization': "Bearer $token"});
@@ -62,6 +58,15 @@ class BookRepository {
       return userBooksMap;
     } catch (err) {
       throw err;
+    }
+  }
+
+  Future<Map<String, EpubBook>> getBooks() async {
+    var currentEpubs = getCachedBooks();
+    if (currentEpubs != null) {
+      return currentEpubs;
+    } else {
+      return getBooksFromServer();
     }
   }
 

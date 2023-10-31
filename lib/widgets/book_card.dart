@@ -69,22 +69,17 @@ class BookCard extends StatelessWidget {
                                 children: [
                                   IconButton(
                                     iconSize: 20.0,
-                                    icon: const Icon(Icons.favorite),
-                                    onPressed: () {},
-                                  ),
-                                  IconButton(
-                                    iconSize: 20.0,
                                     icon: const Icon(Icons.delete),
                                     onPressed: () {},
                                   ),
-                                  ElevatedButton(
-                                    onPressed: () => Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) =>
-                                                ReadingScreen(book: epubBook))),
-                                    child: const Text('Read'),
-                                  ),
+                                  OutlinedButton(
+                                      onPressed: () => Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  ReadingScreen(
+                                                      book: epubBook))),
+                                      child: const Text('Read'))
                                 ],
                               )
                             ])),
