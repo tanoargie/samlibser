@@ -19,6 +19,7 @@ class BookCard extends StatelessWidget {
     if (img != null) {
       Uint8List png = Uint8List.fromList(image_ui.encodePng(img));
       return image_widget.Image(
+        fit: BoxFit.fill,
         image: image_widget.MemoryImage(png),
         alignment: Alignment.centerLeft,
       );
