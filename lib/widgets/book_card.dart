@@ -55,6 +55,9 @@ class BookCard extends StatelessWidget {
                             children: [
                               Text(epubBook.Title ?? '',
                                   textAlign: TextAlign.left,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  softWrap: false,
                                   style: const TextStyle(
                                       fontSize: 24.0,
                                       fontWeight: FontWeight.w900)),
