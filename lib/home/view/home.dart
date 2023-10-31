@@ -19,7 +19,7 @@ class HomePage extends StatelessWidget {
             child: const HomePage()));
   }
 
-  getColumnSizes(Size screenSize) {
+  List<TrackSize> getColumnSizes(Size screenSize) {
     if (screenSize.width > 768) {
       return [1.fr, 1.fr, 1.fr, 1.fr];
     } else if (screenSize.width > 480) {
@@ -29,14 +29,19 @@ class HomePage extends StatelessWidget {
     }
   }
 
-  getRowSizes(Size screenSize) {
-    if (screenSize.width > 768) {
-      return [auto, auto, auto, auto];
-    } else if (screenSize.width > 480) {
-      return [auto, auto];
-    } else {
-      return [auto];
+  List<BookCard> getEntries(
+      Map<String, EpubBook> mapOfEpubs, BuildContext context) {
+    List<BookCard> listOfWidgets = [];
+    for (var i = 0; i < mapOfEpubs.entries.length; i++) {
+      listOfWidgets.add(BookCard(
+          deleteCallback: () {
+            context
+                .read<HomeCubit>()
+                .deleteBook(mapOfEpubs.entries.elementAt(i).key);
+          },
+          epubBook: mapOfEpubs.entries.elementAt(i).value));
     }
+    return listOfWidgets;
   }
 
   @override
@@ -68,27 +73,30 @@ class HomePage extends StatelessWidget {
               }
             }, child:
                 BlocBuilder<HomeCubit, HomeState>(builder: (context, state) {
-              List<EpubBook> listEpubs = state.books?.values.toList() ?? [];
               if (state.loading == false) {
-                if (listEpubs.isEmpty) {
-                  return const Text('No books!');
+                Map<String, EpubBook> mapOfEpubs = state.books ?? {};
+                if (mapOfEpubs.isEmpty) {
+                  return const Center(child: Text('No books!'));
                 }
                 if (state.errorMessage.isNotEmpty) {
-                  return const Text("There was an error getting book links");
+                  return const Center(
+                      child: Text("There was an error getting book links"));
                 }
+                final List<BookCard> entries = getEntries(mapOfEpubs, context);
+                final List<TrackSize> columnSizes =
+                    getColumnSizes(MediaQuery.sizeOf(context));
+                final rowSizes = List.generate(
+                    entries.length ~/ columnSizes.length, (_) => auto);
                 return CustomScrollView(slivers: [
                   SliverToBoxAdapter(
                       child: LayoutGrid(
-                    columnSizes: getColumnSizes(MediaQuery.sizeOf(context)),
-                    rowSizes: getRowSizes(MediaQuery.sizeOf(context)),
+                    columnSizes: columnSizes,
+                    rowSizes: rowSizes,
                     rowGap: 40,
                     columnGap: 24,
-                    children: [
-                      for (var i = 0; i < listEpubs.length; i++)
-                        BookCard(epubBook: listEpubs[i]),
-                    ],
-                  )),
-                ], shrinkWrap: true);
+                    children: entries,
+                  ))
+                ]);
               } else {
                 return const Center(child: CircularProgressIndicator());
               }

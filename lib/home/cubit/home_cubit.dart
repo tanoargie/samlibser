@@ -55,4 +55,17 @@ class HomeCubit extends Cubit<HomeState> {
       logger.e("Error addBook", error: "$e");
     }
   }
+
+  Future<void> deleteBook(String key) async {
+    emit(state.copyWith(loading: true, errorMessage: ""));
+    try {
+      final Map<String, EpubBook> savedBooks = Map.of(state.books ?? {});
+      await _bookRepository.deleteBook(key);
+      savedBooks.remove(key);
+      emit(state.copyWith(books: savedBooks, loading: false));
+    } catch (e) {
+      emit(state.copyWith(loading: false, errorMessage: e.toString()));
+      logger.e("Error addBook", error: "$e");
+    }
+  }
 }

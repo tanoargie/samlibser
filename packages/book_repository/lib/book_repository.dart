@@ -20,6 +20,12 @@ class FileUploadCancelled implements Exception {
   static String message = "Cancelled upload";
 }
 
+class DeleteRecord implements Exception {
+  const DeleteRecord();
+
+  static String message = "Could not delete book!";
+}
+
 class BookRepository {
   BookRepository(
       {required AuthenticationRepository authenticationRepository,
@@ -80,6 +86,21 @@ class BookRepository {
       return result.files.single;
     } else {
       throw FileUploadCancelled();
+    }
+  }
+
+  Future<void> deleteBook(String key) async {
+    var token = _authenticationRepository?.currentUser.token;
+    try {
+      await http.delete(Uri.parse('$baseUrl/$key'),
+          headers: {'Authorization': "Bearer $token"});
+      var books = getCachedBooks();
+      books?.remove(key);
+      if (books != null) {
+        _cache.write(key: booksCacheKey, value: books);
+      }
+    } catch (e) {
+      throw DeleteRecord();
     }
   }
 

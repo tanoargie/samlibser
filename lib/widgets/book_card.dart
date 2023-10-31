@@ -7,9 +7,11 @@ import 'dart:typed_data';
 import 'package:samlibser/widgets/reader.dart';
 
 class BookCard extends StatelessWidget {
-  const BookCard({super.key, required this.epubBook});
+  const BookCard(
+      {super.key, required this.epubBook, required this.deleteCallback});
 
   final EpubBook epubBook;
+  final VoidCallback deleteCallback;
 
   getImage(image_ui.Image? img) {
     if (img != null) {
@@ -70,7 +72,7 @@ class BookCard extends StatelessWidget {
                                   IconButton(
                                     iconSize: 20.0,
                                     icon: const Icon(Icons.delete),
-                                    onPressed: () {},
+                                    onPressed: deleteCallback,
                                   ),
                                   OutlinedButton(
                                       onPressed: () => Navigator.push(
