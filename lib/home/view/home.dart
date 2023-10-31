@@ -92,7 +92,7 @@ class HomePage extends StatelessWidget {
                       child: LayoutGrid(
                     columnSizes: columnSizes,
                     rowSizes: rowSizes,
-                    rowGap: 40,
+                    rowGap: 16,
                     columnGap: 24,
                     children: entries,
                   ))

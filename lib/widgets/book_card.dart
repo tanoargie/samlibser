@@ -13,6 +13,8 @@ class BookCard extends StatelessWidget {
   final EpubBook epubBook;
   final VoidCallback deleteCallback;
 
+  static final _whitespaceRE = RegExp(r"\s+");
+
   getImage(image_ui.Image? img) {
     if (img != null) {
       Uint8List png = Uint8List.fromList(image_ui.encodePng(img));
@@ -62,7 +64,9 @@ class BookCard extends StatelessWidget {
                                       fontSize: 24.0,
                                       fontWeight: FontWeight.w900)),
                               Text(
-                                epubBook.Author ?? '',
+                                epubBook.Author?.split(_whitespaceRE)
+                                        .join(" ") ??
+                                    '',
                                 textAlign: TextAlign.left,
                                 style: const TextStyle(
                                     fontSize: 20.0,
