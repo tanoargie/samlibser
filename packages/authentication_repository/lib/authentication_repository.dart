@@ -226,15 +226,17 @@ class AuthenticationRepository {
   static const userCacheKey = '__user_cache_key__';
 
   Stream<User> get user {
-    return _firebaseAuth.authStateChanges().asyncMap((firebaseUser) async {
-      var tokenResult = await firebaseUser?.getIdTokenResult();
-      var token = tokenResult?.token ?? '';
-      final user = firebaseUser == null
-          ? User.empty
-          : firebaseUser.toUser.withToken(token);
+    return _firebaseAuth.idTokenChanges().asyncMap((firebaseUser) async {
+      final user = firebaseUser == null ? User.empty : firebaseUser.toUser;
       _cache.write(key: userCacheKey, value: user);
       return user;
     });
+  }
+
+  Future<String?> getCurrentUserToken() async {
+    firebase_auth.IdTokenResult? result =
+        await _firebaseAuth.currentUser?.getIdTokenResult();
+    return result?.token ?? '';
   }
 
   User get currentUser {
@@ -273,6 +275,7 @@ class AuthenticationRepository {
       }
 
       await _firebaseAuth.signInWithCredential(credential);
+      await _firebaseAuth.currentUser?.linkWithCredential(credential);
     } on firebase_auth.FirebaseAuthException catch (e) {
       throw LogInWithGoogleFailure.fromCode(e.code);
     } catch (_) {
@@ -297,6 +300,7 @@ class AuthenticationRepository {
       }
 
       await _firebaseAuth.signInWithCredential(credential);
+      await _firebaseAuth.currentUser?.linkWithCredential(credential);
     } on firebase_auth.FirebaseAuthException catch (e) {
       //TODO: Logging
       throw LogInWithAppleFailure.fromCode(e.code);

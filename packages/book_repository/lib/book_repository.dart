@@ -50,7 +50,7 @@ class BookRepository {
   }
 
   Future<Map<String, EpubBook>> getBooksFromServer() async {
-    var token = _authenticationRepository?.currentUser.token;
+    var token = await _authenticationRepository?.getCurrentUserToken();
     try {
       var response =
           await http.get(baseUrl, headers: {'Authorization': "Bearer $token"});
@@ -94,7 +94,7 @@ class BookRepository {
   }
 
   Future<void> deleteBook(String key) async {
-    var token = _authenticationRepository?.currentUser.token;
+    var token = await _authenticationRepository?.getCurrentUserToken();
     try {
       await http.delete(Uri.parse('$baseUrl/$key'),
           headers: {'Authorization': "Bearer $token"});
@@ -107,7 +107,7 @@ class BookRepository {
   }
 
   Future<Map<String, EpubBook>> addBook(PlatformFile bookFile) async {
-    var token = _authenticationRepository?.currentUser.token;
+    var token = await _authenticationRepository?.getCurrentUserToken();
     try {
       Map<String, String> headers = {
         "Authorization": "Bearer $token",
