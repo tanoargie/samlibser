@@ -12,6 +12,7 @@ class AccountPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final user = context.select((AppBloc bloc) => bloc.state.user);
+    final username = user.name ?? '';
 
     return Scaffold(
       appBar: AppBar(
@@ -25,20 +26,80 @@ class AccountPage extends StatelessWidget {
         ],
       ),
       body: Align(
-        alignment: Alignment.center,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: <Widget>[
-            const SizedBox(height: 4),
-            Text(user.email ?? ''),
-          ],
-        ),
-      ),
+          alignment: Alignment.topCenter,
+          child: Column(
+            children: <Widget>[
+              Padding(
+                padding: const EdgeInsets.all(12),
+                child: Text('Hello $username',
+                    style: const TextStyle(
+                        fontSize: 28, fontWeight: FontWeight.bold)),
+              ),
+              Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+                // OutlinedButton(
+                //     style: const ButtonStyle(
+                //         fixedSize: MaterialStatePropertyAll(Size.infinite)),
+                //     onPressed: () {},
+                //     child: const Row(
+                //       mainAxisAlignment: MainAxisAlignment.start,
+                //       children: [
+                //         Icon(Icons.account_box),
+                //         Padding(
+                //           padding: EdgeInsets.symmetric(horizontal: 12),
+                //           child: Text(
+                //             'Personal Info',
+                //           ),
+                //         ),
+                //         Spacer(),
+                //         Icon(Icons.arrow_right),
+                //       ],
+                //     )),
+                TextButton(
+                    style: TextButton.styleFrom(
+                      foregroundColor: Colors.black87,
+                    ),
+                    onPressed: () {},
+                    child: const Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        Icon(Icons.lock),
+                        Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 12),
+                          child: Text(
+                            'Reset Password',
+                          ),
+                        ),
+                        Spacer(),
+                        Icon(Icons.arrow_right),
+                      ],
+                    )),
+                TextButton(
+                    style: TextButton.styleFrom(
+                      foregroundColor: Colors.black87,
+                    ),
+                    onPressed: () {},
+                    child: const Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        Icon(Icons.delete),
+                        Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 12),
+                          child: Text(
+                            'Delete Account',
+                          ),
+                        ),
+                        Spacer(),
+                        Icon(Icons.arrow_right),
+                      ],
+                    )),
+              ])
+            ],
+          )),
       bottomNavigationBar: BottomNavigationBar(
           items: const <BottomNavigationBarItem>[
             BottomNavigationBarItem(
-              icon: Icon(Icons.library_books),
-              label: 'Library',
+              icon: Icon(Icons.home),
+              label: 'Home',
             ),
             BottomNavigationBarItem(
               icon: Icon(Icons.account_circle),
