@@ -17,7 +17,7 @@ final class HomeState extends Equatable {
     String? errorMessage,
   }) {
     return HomeState(
-        books: books,
+        books: books ?? this.books,
         loading: loading,
         errorMessage: errorMessage ?? this.errorMessage);
   }

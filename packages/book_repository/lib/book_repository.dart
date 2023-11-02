@@ -41,6 +41,10 @@ class BookRepository {
 
   static const booksCacheKey = '__books_cache_key__';
 
+  void writeCachedBooks(Map<String, EpubBook> userBooks) {
+    _cache.write(key: booksCacheKey, value: userBooks);
+  }
+
   Map<String, EpubBook>? getCachedBooks() {
     return _cache.read<Map<String, EpubBook>>(key: booksCacheKey) ?? null;
   }
@@ -60,7 +64,7 @@ class BookRepository {
         final book = await EpubDocument.openData(file);
         userBooksMap.addEntries([MapEntry(id, book)]);
       }
-      _cache.write(key: booksCacheKey, value: userBooksMap);
+      writeCachedBooks(userBooksMap);
       return userBooksMap;
     } catch (err) {
       throw err;
@@ -94,11 +98,9 @@ class BookRepository {
     try {
       await http.delete(Uri.parse('$baseUrl/$key'),
           headers: {'Authorization': "Bearer $token"});
-      var books = getCachedBooks();
-      books?.remove(key);
-      if (books != null) {
-        _cache.write(key: booksCacheKey, value: books);
-      }
+      Map<String, EpubBook> cachedEpubs = getCachedBooks() ?? {};
+      cachedEpubs.remove(key);
+      writeCachedBooks(cachedEpubs);
     } catch (e) {
       throw DeleteRecord();
     }
@@ -132,7 +134,11 @@ class BookRepository {
       Book book = Book.fromJson(responseJson['data']);
       final ifile = await InternetFile.get(book.url);
       final epub = await EpubDocument.openData(ifile);
-      return <String, EpubBook>{book.id: epub};
+      final newEpub = <String, EpubBook>{book.id: epub};
+      Map<String, EpubBook> cachedEpubs = getCachedBooks() ?? {};
+      cachedEpubs.addAll(newEpub);
+      writeCachedBooks(cachedEpubs);
+      return newEpub;
     } catch (err) {
       throw err;
     }
