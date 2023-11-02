@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:samlibser/app/bloc/app_bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:samlibser/reset_password/view/reset_password_page.dart';
 
 class AccountPage extends StatelessWidget {
   const AccountPage({super.key});
@@ -58,7 +59,8 @@ class AccountPage extends StatelessWidget {
                     style: TextButton.styleFrom(
                       foregroundColor: Colors.black87,
                     ),
-                    onPressed: () {},
+                    onPressed: () => Navigator.of(context)
+                        .push<void>(ResetPasswordPage.route()),
                     child: const Row(
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [

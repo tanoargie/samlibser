@@ -7,6 +7,18 @@ import 'package:meta/meta.dart';
 import 'package:cache/cache.dart';
 import 'models/user.dart';
 
+/// {@template reset_password_with_email_and_password_failure}
+/// Thrown during the reset password process if a failure occurs.
+/// {@endtemplate}
+class ResetPasswordWithEmailAndPasswordFailure implements Exception {
+  /// {@macro reset_password_with_email_and_password_failure}
+  const ResetPasswordWithEmailAndPasswordFailure([
+    this.message = 'An unknown exception occurred.',
+  ]);
+
+  final String message;
+}
+
 /// {@template sign_up_with_email_and_password_failure}
 /// Thrown during the sign up process if a failure occurs.
 /// {@endtemplate}
@@ -326,6 +338,10 @@ class AuthenticationRepository {
       //TODO: Logging
       throw const LogInWithEmailAndPasswordFailure();
     }
+  }
+
+  Future<void> resetPassword({required String password}) async {
+    await _firebaseAuth.currentUser?.updatePassword(password);
   }
 
   Future<void> logOut() async {
