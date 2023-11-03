@@ -22,9 +22,8 @@ class ReadingScreen extends StatelessWidget {
           return RichText(
             text: TextSpan(
                 text: chapter,
-                style: DefaultTextStyle.of(context)
-                    .style
-                    .apply(fontSizeFactor: 0.5)),
+                style:
+                    const TextStyle(fontSize: 20, fontWeight: FontWeight.w800)),
           );
         },
       )),
@@ -35,6 +34,12 @@ class ReadingScreen extends StatelessWidget {
       ),
       body: EpubView(
         controller: epubController,
+        builders: EpubViewBuilders<DefaultBuilderOptions>(
+            options: const DefaultBuilderOptions(
+                textStyle: TextStyle(fontSize: 16, height: 1)),
+            chapterDividerBuilder: (epubChapter) => Text(
+                epubChapter.Title ?? '',
+                style: const TextStyle(fontSize: 20))),
       ),
     );
   }
