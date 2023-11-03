@@ -102,12 +102,14 @@ class AccountPage extends StatelessWidget {
                                         child: const Text('No'),
                                       ),
                                       TextButton(
-                                        onPressed: () {
-                                          context
+                                        onPressed: () async {
+                                          await context
                                               .read<AuthenticationRepository>()
-                                              .deleteAccount();
-                                          Navigator.of(context)
-                                              .push<void>(LoginPage.route());
+                                              .deleteAccount(context, () {
+                                            if (!context.mounted) return;
+                                            Navigator.of(context)
+                                                .push<void>(LoginPage.route());
+                                          });
                                         },
                                         child: const Text('Yes'),
                                       ),

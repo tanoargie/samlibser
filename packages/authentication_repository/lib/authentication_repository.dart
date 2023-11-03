@@ -1,9 +1,9 @@
 import 'dart:async';
 
 import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
+import 'package:flutter/widgets.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
-import 'package:meta/meta.dart';
 import 'package:cache/cache.dart';
 import 'models/user.dart';
 
@@ -266,6 +266,12 @@ class AuthenticationRepository {
     } catch (_) {
       throw const SignUpWithEmailAndPasswordFailure();
     }
+  }
+
+  Future<void> deleteAccount(
+      BuildContext context, VoidCallback onSuccess) async {
+    await _firebaseAuth.currentUser?.delete();
+    onSuccess.call();
   }
 
   Future<void> logInWithGoogle() async {
