@@ -1,6 +1,8 @@
+import 'package:authentication_repository/authentication_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:samlibser/app/bloc/app_bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:samlibser/login/view/login.dart';
 import 'package:samlibser/reset_password/view/reset_password_page.dart';
 
 class AccountPage extends StatelessWidget {
@@ -79,7 +81,43 @@ class AccountPage extends StatelessWidget {
                     style: TextButton.styleFrom(
                       foregroundColor: Colors.black87,
                     ),
-                    onPressed: () {},
+                    onPressed: () => showDialog<String>(
+                          context: context,
+                          builder: (BuildContext context) => Dialog(
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: <Widget>[
+                                  const Text('Are you sure?'),
+                                  const SizedBox(height: 15),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      TextButton(
+                                        onPressed: () {
+                                          Navigator.pop(context);
+                                        },
+                                        child: const Text('No'),
+                                      ),
+                                      TextButton(
+                                        onPressed: () {
+                                          context
+                                              .read<AuthenticationRepository>()
+                                              .deleteAccount();
+                                          Navigator.of(context)
+                                              .push<void>(LoginPage.route());
+                                        },
+                                        child: const Text('Yes'),
+                                      ),
+                                    ],
+                                  )
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
                     child: const Row(
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
