@@ -47,8 +47,7 @@ class HomeCubit extends Cubit<HomeState> {
           loading: false, errorMessage: DuplicatedRecord.message));
       logger.e("Error addBook", error: DuplicatedRecord.message);
     } on FileUploadCancelled {
-      emit(state.copyWith(
-          loading: false, errorMessage: FileUploadCancelled.message));
+      emit(state.copyWith(loading: false));
       logger.e("Error addBook", error: FileUploadCancelled.message);
     } catch (e) {
       emit(state.copyWith(loading: false, errorMessage: e.toString()));

@@ -122,7 +122,7 @@ class HomePage extends StatelessWidget {
             BlocBuilder<HomeCubit, HomeState>(builder: (context, state) {
           return FloatingActionButton(
               tooltip: 'Book upload',
-              child: const Icon(Icons.add),
+              child: const Icon(Icons.add, color: Colors.white),
               onPressed: () => context.read<HomeCubit>().addBook());
         }));
   }

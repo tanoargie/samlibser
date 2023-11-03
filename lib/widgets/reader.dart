@@ -16,8 +16,7 @@ class ReadingScreen extends StatelessWidget {
           title: EpubViewActualChapter(
         controller: epubController,
         builder: (chapterValue) {
-          final String chapter =
-              chapterValue?.chapter?.Title?.replaceAll('\n', '').trim() ?? '';
+          final String chapter = chapterValue?.chapterNumber.toString() ?? '';
 
           return RichText(
             text: TextSpan(
@@ -27,7 +26,7 @@ class ReadingScreen extends StatelessWidget {
           );
         },
       )),
-      drawer: Drawer(
+      endDrawer: Drawer(
         child: EpubViewTableOfContents(
           controller: epubController,
         ),
