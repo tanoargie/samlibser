@@ -89,7 +89,9 @@ class BookCard extends StatelessWidget {
                                               builder: (context) =>
                                                   ReadingScreen(
                                                       book: epubBook))),
-                                      child: const Text('Read'))
+                                      child: const Text('Read',
+                                          style:
+                                              TextStyle(color: Colors.black87)))
                                 ],
                               )
                             ])),

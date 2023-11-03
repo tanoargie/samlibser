@@ -123,15 +123,16 @@ class AccountPage extends StatelessWidget {
                     child: const Row(
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
-                        Icon(Icons.delete),
+                        Icon(Icons.delete, color: Colors.redAccent),
                         Padding(
                           padding: EdgeInsets.symmetric(horizontal: 12),
                           child: Text(
                             'Delete Account',
+                            style: TextStyle(color: Colors.redAccent),
                           ),
                         ),
                         Spacer(),
-                        Icon(Icons.arrow_right),
+                        Icon(Icons.arrow_right, color: Colors.redAccent),
                       ],
                     )),
               ])
