@@ -52,21 +52,24 @@ class BookRepository {
   Future<Map<String, EpubBook>> getBooksFromServer() async {
     var token = await _authenticationRepository?.getCurrentUserToken();
     try {
-      var response =
-          await http.get(baseUrl, headers: {'Authorization': "Bearer $token"});
+      var response = await http.get(baseUrl, headers: {
+        'Authorization': "Bearer $token",
+      });
       final responseJson = jsonDecode(response.body);
       List<dynamic> userBooks = responseJson["data"] ?? [];
       Map<String, EpubBook> userBooksMap = <String, EpubBook>{};
       for (int loop = 0; loop < userBooks.length; loop++) {
         final id = userBooks.elementAt(loop)["ID"].toString();
         final url = userBooks.elementAt(loop)["URL"].toString();
-        final file = await InternetFile.get(url);
+        final file = await InternetFile.get(url,
+            headers: {"Access-Control-Allow-Origin": "*"});
         final book = await EpubDocument.openData(file);
         userBooksMap.addEntries([MapEntry(id, book)]);
       }
       writeCachedBooks(userBooksMap);
       return userBooksMap;
     } catch (err) {
+      print(err);
       throw err;
     }
   }
@@ -111,7 +114,7 @@ class BookRepository {
     try {
       Map<String, String> headers = {
         "Authorization": "Bearer $token",
-        'Content-Type': 'multipart/form-data;',
+        "Content-Type": "multipart/form-data;"
       };
       var request = http.MultipartRequest('POST', baseUrl);
       var file;
@@ -132,7 +135,8 @@ class BookRepository {
       }
       final responseJson = jsonDecode(response.body);
       Book book = Book.fromJson(responseJson['data']);
-      final ifile = await InternetFile.get(book.url);
+      final ifile = await InternetFile.get(book.url,
+          headers: {"Access-Control-Allow-Origin": "*"});
       final epub = await EpubDocument.openData(ifile);
       final newEpub = <String, EpubBook>{book.id: epub};
       Map<String, EpubBook> cachedEpubs = getCachedBooks() ?? {};
