@@ -22,22 +22,12 @@ class HomePage extends StatelessWidget {
   }
 
   int numberOfColumnsByScreen(Size screenSize) {
-    if (screenSize.width > 768) {
+    if (screenSize.width > 1024) {
       return 4;
     } else if (screenSize.width > 480) {
       return 2;
     } else {
       return 1;
-    }
-  }
-
-  List<TrackSize> getColumnSizes(Size screenSize, int entriesSize) {
-    if (screenSize.width > 768) {
-      return [1.fr, 1.fr, 1.fr, 1.fr];
-    } else if (screenSize.width > 480) {
-      return [1.fr, 1.fr];
-    } else {
-      return [1.fr];
     }
   }
 
