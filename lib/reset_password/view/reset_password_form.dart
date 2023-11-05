@@ -45,18 +45,21 @@ class _PasswordInput extends StatelessWidget {
     return BlocBuilder<ResetPasswordCubit, ResetPasswordState>(
       buildWhen: (previous, current) => previous.password != current.password,
       builder: (context, state) {
-        return TextField(
-          key: const Key('resetPasswordForm_passwordInput_textField'),
-          onChanged: (password) =>
-              context.read<ResetPasswordCubit>().passwordChanged(password),
-          obscureText: true,
-          decoration: InputDecoration(
-            labelText: 'Password',
-            helperText: '',
-            errorText:
-                state.password.displayError != null ? 'Invalid password' : null,
-          ),
-        );
+        return ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 800),
+            child: TextField(
+              key: const Key('resetPasswordForm_passwordInput_textField'),
+              onChanged: (password) =>
+                  context.read<ResetPasswordCubit>().passwordChanged(password),
+              obscureText: true,
+              decoration: InputDecoration(
+                labelText: 'Password',
+                helperText: '',
+                errorText: state.password.displayError != null
+                    ? 'Invalid password'
+                    : null,
+              ),
+            ));
       },
     );
   }
@@ -70,20 +73,23 @@ class _ConfirmPasswordInput extends StatelessWidget {
           previous.password != current.password ||
           previous.confirmedPassword != current.confirmedPassword,
       builder: (context, state) {
-        return TextField(
-          key: const Key('resetPasswordForm_confirmedPasswordInput_textField'),
-          onChanged: (confirmPassword) => context
-              .read<ResetPasswordCubit>()
-              .confirmedPasswordChanged(confirmPassword),
-          obscureText: true,
-          decoration: InputDecoration(
-            labelText: 'Confirm password',
-            helperText: '',
-            errorText: state.confirmedPassword.displayError != null
-                ? 'Passwords do not match'
-                : null,
-          ),
-        );
+        return ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 800),
+            child: TextField(
+              key: const Key(
+                  'resetPasswordForm_confirmedPasswordInput_textField'),
+              onChanged: (confirmPassword) => context
+                  .read<ResetPasswordCubit>()
+                  .confirmedPasswordChanged(confirmPassword),
+              obscureText: true,
+              decoration: InputDecoration(
+                labelText: 'Confirm password',
+                helperText: '',
+                errorText: state.confirmedPassword.displayError != null
+                    ? 'Passwords do not match'
+                    : null,
+              ),
+            ));
       },
     );
   }

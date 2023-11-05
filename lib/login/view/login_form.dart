@@ -61,17 +61,20 @@ class _EmailInput extends StatelessWidget {
     return BlocBuilder<LoginCubit, LoginState>(
       buildWhen: (previous, current) => previous.email != current.email,
       builder: (context, state) {
-        return TextField(
-          key: const Key('loginForm_emailInput_textField'),
-          onChanged: (email) => context.read<LoginCubit>().emailChanged(email),
-          keyboardType: TextInputType.emailAddress,
-          decoration: InputDecoration(
-            labelText: 'Email',
-            helperText: '',
-            errorText:
-                state.email.displayError != null ? 'Invalid email' : null,
-          ),
-        );
+        return ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 800),
+            child: TextField(
+              key: const Key('loginForm_emailInput_textField'),
+              onChanged: (email) =>
+                  context.read<LoginCubit>().emailChanged(email),
+              keyboardType: TextInputType.emailAddress,
+              decoration: InputDecoration(
+                labelText: 'Email',
+                helperText: '',
+                errorText:
+                    state.email.displayError != null ? 'Invalid email' : null,
+              ),
+            ));
       },
     );
   }
@@ -83,18 +86,21 @@ class _PasswordInput extends StatelessWidget {
     return BlocBuilder<LoginCubit, LoginState>(
       buildWhen: (previous, current) => previous.password != current.password,
       builder: (context, state) {
-        return TextField(
-          key: const Key('loginForm_passwordInput_textField'),
-          onChanged: (password) =>
-              context.read<LoginCubit>().passwordChanged(password),
-          obscureText: true,
-          decoration: InputDecoration(
-            labelText: 'Password',
-            helperText: '',
-            errorText:
-                state.password.displayError != null ? 'Invalid password' : null,
-          ),
-        );
+        return ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 800),
+            child: TextField(
+              key: const Key('loginForm_passwordInput_textField'),
+              onChanged: (password) =>
+                  context.read<LoginCubit>().passwordChanged(password),
+              obscureText: true,
+              decoration: InputDecoration(
+                labelText: 'Password',
+                helperText: '',
+                errorText: state.password.displayError != null
+                    ? 'Invalid password'
+                    : null,
+              ),
+            ));
       },
     );
   }
