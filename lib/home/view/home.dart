@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:epub_view/epub_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -19,7 +21,17 @@ class HomePage extends StatelessWidget {
             child: const HomePage()));
   }
 
-  List<TrackSize> getColumnSizes(Size screenSize) {
+  int numberOfColumnsByScreen(Size screenSize) {
+    if (screenSize.width > 768) {
+      return 4;
+    } else if (screenSize.width > 480) {
+      return 2;
+    } else {
+      return 1;
+    }
+  }
+
+  List<TrackSize> getColumnSizes(Size screenSize, int entriesSize) {
     if (screenSize.width > 768) {
       return [1.fr, 1.fr, 1.fr, 1.fr];
     } else if (screenSize.width > 480) {
@@ -83,17 +95,19 @@ class HomePage extends StatelessWidget {
                       child: Text("There was an error getting book links"));
                 }
                 final List<BookCard> entries = getEntries(mapOfEpubs, context);
+                final int numberOfColumns = min(entries.length,
+                    numberOfColumnsByScreen(MediaQuery.sizeOf(context)));
                 final List<TrackSize> columnSizes =
-                    getColumnSizes(MediaQuery.sizeOf(context));
-                final rowSizes = List.generate(
+                    List.generate(numberOfColumns, (_) => 1.fr);
+                final List<TrackSize> rowSizes = List.generate(
                     entries.length ~/ columnSizes.length, (_) => auto);
                 return CustomScrollView(slivers: [
                   SliverToBoxAdapter(
                       child: LayoutGrid(
                     columnSizes: columnSizes,
                     rowSizes: rowSizes,
-                    rowGap: 16,
-                    columnGap: 24,
+                    rowGap: 12,
+                    columnGap: 12,
                     children: entries,
                   ))
                 ]);
