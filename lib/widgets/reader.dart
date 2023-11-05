@@ -21,8 +21,10 @@ class ReadingScreen extends StatelessWidget {
           return RichText(
             text: TextSpan(
                 text: chapter,
-                style:
-                    const TextStyle(fontSize: 20, fontWeight: FontWeight.w800)),
+                style: const TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.w800,
+                    color: Colors.white)),
           );
         },
       )),
