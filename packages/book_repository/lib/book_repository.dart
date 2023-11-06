@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:typed_data';
 import 'package:cache/cache.dart';
 import 'package:http/http.dart' as http;
 import 'package:file_picker/file_picker.dart';
@@ -56,20 +57,22 @@ class BookRepository {
         'Authorization': "Bearer $token",
       });
       final responseJson = jsonDecode(response.body);
-      List<dynamic> userBooks = responseJson["data"] ?? [];
-      Map<String, EpubBook> userBooksMap = <String, EpubBook>{};
+      List<Book> userBooks = (responseJson["data"] ?? [])
+          .map<Book>((json) => Book.fromJson(json))
+          .toList();
+      List<Uint8List> files = await Future.wait<Uint8List>(userBooks.map(
+          (book) => InternetFile.get(book.url,
+              headers: {"Access-Control-Allow-Origin": "*"})));
+      List<EpubBook> books = await Future.wait<EpubBook>(
+          files.map((file) => EpubDocument.openData(file)));
+      Map<String, EpubBook> userBooksMap = {};
       for (int loop = 0; loop < userBooks.length; loop++) {
-        final id = userBooks.elementAt(loop)["ID"].toString();
-        final url = userBooks.elementAt(loop)["URL"].toString();
-        final file = await InternetFile.get(url,
-            headers: {"Access-Control-Allow-Origin": "*"});
-        final book = await EpubDocument.openData(file);
-        userBooksMap.addEntries([MapEntry(id, book)]);
+        userBooksMap.addEntries(
+            [MapEntry(userBooks.elementAt(loop).id, books.elementAt(loop))]);
       }
       writeCachedBooks(userBooksMap);
       return userBooksMap;
     } catch (err) {
-      print(err);
       throw err;
     }
   }

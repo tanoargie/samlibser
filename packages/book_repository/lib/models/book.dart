@@ -10,6 +10,6 @@ class Book extends Equatable {
   List<Object> get props => [id, url];
 
   factory Book.fromJson(Map<String, dynamic> json) {
-    return Book(json['ID'].toString(), json['URL']);
+    return Book(json['ID'].toString(), json['URL'].toString());
   }
 }

@@ -225,7 +225,9 @@ class AuthenticationRepository {
     GoogleSignIn? googleSignIn,
   })  : _cache = cache ?? CacheClient(),
         _firebaseAuth = firebaseAuth ?? firebase_auth.FirebaseAuth.instance,
-        _googleSignIn = googleSignIn ?? GoogleSignIn.standard();
+        _googleSignIn = googleSignIn ??
+            GoogleSignIn(
+                clientId: const String.fromEnvironment("GOOGLE_CLIENT_ID"));
 
   final CacheClient _cache;
   final firebase_auth.FirebaseAuth _firebaseAuth;
