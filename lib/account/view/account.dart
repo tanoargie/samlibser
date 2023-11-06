@@ -1,4 +1,5 @@
 import 'package:authentication_repository/authentication_repository.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:samlibser/app/bloc/app_bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -38,104 +39,117 @@ class AccountPage extends StatelessWidget {
                     style: const TextStyle(
                         fontSize: 28, fontWeight: FontWeight.bold)),
               ),
-              Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-                // OutlinedButton(
-                //     style: const ButtonStyle(
-                //         fixedSize: MaterialStatePropertyAll(Size.infinite)),
-                //     onPressed: () {},
-                //     child: const Row(
-                //       mainAxisAlignment: MainAxisAlignment.start,
-                //       children: [
-                //         Icon(Icons.account_box),
-                //         Padding(
-                //           padding: EdgeInsets.symmetric(horizontal: 12),
-                //           child: Text(
-                //             'Personal Info',
-                //           ),
-                //         ),
-                //         Spacer(),
-                //         Icon(Icons.arrow_right),
-                //       ],
-                //     )),
-                TextButton(
-                    style: TextButton.styleFrom(
-                      foregroundColor: Colors.black87,
-                    ),
-                    onPressed: () => Navigator.of(context)
-                        .push<void>(ResetPasswordPage.route()),
-                    child: const Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        Icon(Icons.lock),
-                        Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 12),
-                          child: Text(
-                            'Reset Password',
-                          ),
-                        ),
-                        Spacer(),
-                        Icon(Icons.arrow_right),
-                      ],
-                    )),
-                TextButton(
-                    style: TextButton.styleFrom(
-                      foregroundColor: Colors.black87,
-                    ),
-                    onPressed: () => showDialog<String>(
-                          context: context,
-                          builder: (BuildContext context) => Dialog(
-                            child: Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: <Widget>[
-                                  const Text('Are you sure?'),
-                                  const SizedBox(height: 15),
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      TextButton(
-                                        onPressed: () {
-                                          Navigator.pop(context);
-                                        },
-                                        child: const Text('No'),
-                                      ),
-                                      TextButton(
-                                        onPressed: () async {
-                                          await context
-                                              .read<AuthenticationRepository>()
-                                              .deleteAccount(context, () {
-                                            if (!context.mounted) return;
-                                            Navigator.of(context)
-                                                .push<void>(LoginPage.route());
-                                          });
-                                        },
-                                        child: const Text('Yes'),
-                                      ),
-                                    ],
-                                  )
-                                ],
+              Column(
+                  crossAxisAlignment: kIsWeb
+                      ? CrossAxisAlignment.center
+                      : CrossAxisAlignment.stretch,
+                  children: [
+                    // OutlinedButton(
+                    //     style: const ButtonStyle(
+                    //         fixedSize: MaterialStatePropertyAll(Size.infinite)),
+                    //     onPressed: () {},
+                    //     child: const Row(
+                    //       mainAxisAlignment: MainAxisAlignment.start,
+                    //       children: [
+                    //         Icon(Icons.account_box),
+                    //         Padding(
+                    //           padding: EdgeInsets.symmetric(horizontal: 12),
+                    //           child: Text(
+                    //             'Personal Info',
+                    //           ),
+                    //         ),
+                    //         Spacer(),
+                    //         Icon(Icons.arrow_right),
+                    //       ],
+                    //     )),
+                    TextButton(
+                        style: TextButton.styleFrom(
+                            foregroundColor: Colors.black87,
+                            maximumSize: const Size.fromWidth(400)),
+                        onPressed: () => Navigator.of(context)
+                            .push<void>(ResetPasswordPage.route()),
+                        child: const Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            Icon(Icons.lock),
+                            Padding(
+                              padding: EdgeInsets.symmetric(horizontal: 12),
+                              child: Text(
+                                'Reset Password',
                               ),
                             ),
-                          ),
-                        ),
-                    child: const Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        Icon(Icons.delete, color: Colors.redAccent),
-                        Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 12),
-                          child: Text(
-                            'Delete Account',
-                            style: TextStyle(color: Colors.redAccent),
-                          ),
-                        ),
-                        Spacer(),
-                        Icon(Icons.arrow_right, color: Colors.redAccent),
-                      ],
-                    )),
-              ])
+                            Spacer(),
+                            Icon(Icons.arrow_right),
+                          ],
+                        )),
+                    TextButton(
+                        style: TextButton.styleFrom(
+                            foregroundColor: Colors.black87,
+                            maximumSize: const Size.fromWidth(400)),
+                        onPressed: () => showDialog<String>(
+                              context: context,
+                              builder: (BuildContext context) => Dialog(
+                                  child: Container(
+                                      constraints:
+                                          const BoxConstraints(maxWidth: 600),
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(8.0),
+                                        child: Column(
+                                          mainAxisSize: MainAxisSize.min,
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: <Widget>[
+                                            const Text('Are you sure?'),
+                                            const SizedBox(height: 15),
+                                            Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              children: [
+                                                TextButton(
+                                                  onPressed: () {
+                                                    Navigator.pop(context);
+                                                  },
+                                                  child: const Text('No'),
+                                                ),
+                                                TextButton(
+                                                  onPressed: () async {
+                                                    await context
+                                                        .read<
+                                                            AuthenticationRepository>()
+                                                        .deleteAccount(context,
+                                                            () {
+                                                      if (!context.mounted) {
+                                                        return;
+                                                      }
+                                                      Navigator.of(context)
+                                                          .push<void>(LoginPage
+                                                              .route());
+                                                    });
+                                                  },
+                                                  child: const Text('Yes'),
+                                                ),
+                                              ],
+                                            )
+                                          ],
+                                        ),
+                                      ))),
+                            ),
+                        child: const Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            Icon(Icons.delete, color: Colors.redAccent),
+                            Padding(
+                              padding: EdgeInsets.symmetric(horizontal: 12),
+                              child: Text(
+                                'Delete Account',
+                                style: TextStyle(color: Colors.redAccent),
+                              ),
+                            ),
+                            Spacer(),
+                            Icon(Icons.arrow_right, color: Colors.redAccent),
+                          ],
+                        )),
+                  ])
             ],
           )),
       bottomNavigationBar: BottomNavigationBar(
