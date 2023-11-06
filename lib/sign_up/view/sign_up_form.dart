@@ -45,17 +45,20 @@ class _EmailInput extends StatelessWidget {
     return BlocBuilder<SignUpCubit, SignUpState>(
       buildWhen: (previous, current) => previous.email != current.email,
       builder: (context, state) {
-        return TextField(
-          key: const Key('signUpForm_emailInput_textField'),
-          onChanged: (email) => context.read<SignUpCubit>().emailChanged(email),
-          keyboardType: TextInputType.emailAddress,
-          decoration: InputDecoration(
-            labelText: 'Email',
-            helperText: '',
-            errorText:
-                state.email.displayError != null ? 'Invalid email' : null,
-          ),
-        );
+        return ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 800),
+            child: TextField(
+              key: const Key('signUpForm_emailInput_textField'),
+              onChanged: (email) =>
+                  context.read<SignUpCubit>().emailChanged(email),
+              keyboardType: TextInputType.emailAddress,
+              decoration: InputDecoration(
+                labelText: 'Email',
+                helperText: '',
+                errorText:
+                    state.email.displayError != null ? 'Invalid email' : null,
+              ),
+            ));
       },
     );
   }
@@ -67,18 +70,21 @@ class _PasswordInput extends StatelessWidget {
     return BlocBuilder<SignUpCubit, SignUpState>(
       buildWhen: (previous, current) => previous.password != current.password,
       builder: (context, state) {
-        return TextField(
-          key: const Key('signUpForm_passwordInput_textField'),
-          onChanged: (password) =>
-              context.read<SignUpCubit>().passwordChanged(password),
-          obscureText: true,
-          decoration: InputDecoration(
-            labelText: 'Password',
-            helperText: '',
-            errorText:
-                state.password.displayError != null ? 'Invalid password' : null,
-          ),
-        );
+        return ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 800),
+            child: TextField(
+              key: const Key('signUpForm_passwordInput_textField'),
+              onChanged: (password) =>
+                  context.read<SignUpCubit>().passwordChanged(password),
+              obscureText: true,
+              decoration: InputDecoration(
+                labelText: 'Password',
+                helperText: '',
+                errorText: state.password.displayError != null
+                    ? 'Invalid password'
+                    : null,
+              ),
+            ));
       },
     );
   }
@@ -92,20 +98,22 @@ class _ConfirmPasswordInput extends StatelessWidget {
           previous.password != current.password ||
           previous.confirmedPassword != current.confirmedPassword,
       builder: (context, state) {
-        return TextField(
-          key: const Key('signUpForm_confirmedPasswordInput_textField'),
-          onChanged: (confirmPassword) => context
-              .read<SignUpCubit>()
-              .confirmedPasswordChanged(confirmPassword),
-          obscureText: true,
-          decoration: InputDecoration(
-            labelText: 'Confirm password',
-            helperText: '',
-            errorText: state.confirmedPassword.displayError != null
-                ? 'Passwords do not match'
-                : null,
-          ),
-        );
+        return ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 800),
+            child: TextField(
+              key: const Key('signUpForm_confirmedPasswordInput_textField'),
+              onChanged: (confirmPassword) => context
+                  .read<SignUpCubit>()
+                  .confirmedPasswordChanged(confirmPassword),
+              obscureText: true,
+              decoration: InputDecoration(
+                labelText: 'Confirm password',
+                helperText: '',
+                errorText: state.confirmedPassword.displayError != null
+                    ? 'Passwords do not match'
+                    : null,
+              ),
+            ));
       },
     );
   }
