@@ -38,9 +38,7 @@ class ReadingScreen extends StatelessWidget {
         builders: EpubViewBuilders<DefaultBuilderOptions>(
             options: const DefaultBuilderOptions(
                 textStyle: TextStyle(fontSize: 16, height: 1)),
-            chapterDividerBuilder: (epubChapter) => Text(
-                epubChapter.Title ?? '',
-                style: const TextStyle(fontSize: 20))),
+            chapterDividerBuilder: (epubChapter) => const SizedBox.shrink()),
       ),
     );
   }
