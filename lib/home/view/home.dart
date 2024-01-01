@@ -31,11 +31,17 @@ class HomePage extends StatelessWidget {
     }
   }
 
-  List<BookCard> getEntries(
-      Map<String, EpubBook> mapOfEpubs, BuildContext context) {
+  List<BookCard> getEntries(Map<String, EpubBook> mapOfEpubs,
+      Map<String, String> mapOfPositions, BuildContext context) {
     List<BookCard> listOfWidgets = [];
     for (var i = 0; i < mapOfEpubs.entries.length; i++) {
       listOfWidgets.add(BookCard(
+          updatePositionCallback: (String cfi) {
+            context
+                .read<HomeCubit>()
+                .updateBookPosition(mapOfEpubs.entries.elementAt(i).key, cfi);
+          },
+          cfi: mapOfPositions[mapOfEpubs.entries.elementAt(i).key],
           deleteCallback: () {
             context
                 .read<HomeCubit>()
@@ -77,6 +83,7 @@ class HomePage extends StatelessWidget {
                 BlocBuilder<HomeCubit, HomeState>(builder: (context, state) {
               if (state.loading == false) {
                 Map<String, EpubBook> mapOfEpubs = state.books ?? {};
+                Map<String, String> mapOfPositions = state.positions ?? {};
                 if (mapOfEpubs.isEmpty) {
                   return const Center(child: Text('No books!'));
                 }
@@ -84,7 +91,8 @@ class HomePage extends StatelessWidget {
                   return const Center(
                       child: Text("There was an error getting book links"));
                 }
-                final List<BookCard> entries = getEntries(mapOfEpubs, context);
+                final List<BookCard> entries =
+                    getEntries(mapOfEpubs, mapOfPositions, context);
                 final int numberOfColumns = min(entries.length,
                     numberOfColumnsByScreen(MediaQuery.sizeOf(context)));
                 final List<TrackSize> columnSizes =

@@ -41,9 +41,19 @@ class BookRepository {
       Uri.https(const String.fromEnvironment('BASE_URL'), '/api/books');
 
   static const booksCacheKey = '__books_cache_key__';
+  static const booksPositionsCacheKey = '__books_positions_cache_key__';
 
   void writeCachedBooks(Map<String, EpubBook> userBooks) {
     _cache.write(key: booksCacheKey, value: userBooks);
+  }
+
+  void writeCachedPositions(Map<String, String> userBooksPositions) {
+    _cache.write(key: booksPositionsCacheKey, value: userBooksPositions);
+  }
+
+  Map<String, String>? getCachedBooksPositions() {
+    return _cache.read<Map<String, String>>(key: booksPositionsCacheKey) ??
+        null;
   }
 
   Map<String, EpubBook>? getCachedBooks() {
@@ -66,11 +76,16 @@ class BookRepository {
       List<EpubBook> books = await Future.wait<EpubBook>(
           files.map((file) => EpubDocument.openData(file)));
       Map<String, EpubBook> userBooksMap = {};
+      Map<String, String> userBooksPositionsMap = {};
       for (int loop = 0; loop < userBooks.length; loop++) {
         userBooksMap.addEntries(
             [MapEntry(userBooks.elementAt(loop).id, books.elementAt(loop))]);
+        userBooksPositionsMap.addEntries([
+          MapEntry(userBooks.elementAt(loop).id, userBooks.elementAt(loop).cfi)
+        ]);
       }
       writeCachedBooks(userBooksMap);
+      writeCachedPositions(userBooksPositionsMap);
       return userBooksMap;
     } catch (err) {
       throw err;
@@ -109,6 +124,29 @@ class BookRepository {
       writeCachedBooks(cachedEpubs);
     } catch (e) {
       throw DeleteRecord();
+    }
+  }
+
+  Future<void> updateBookPosition(String key, String cfi) async {
+    var token = await _authenticationRepository?.getCurrentUserToken();
+    try {
+      Map<String, String> headers = {
+        "Authorization": "Bearer $token",
+        "Content-Type": "multipart/form-data;"
+      };
+      Map<String, String> body = <String, String>{"cfi": cfi};
+      var request =
+          await http.MultipartRequest("PATCH", Uri.parse('$baseUrl/$key'));
+      request.fields.addAll(body);
+      request.headers.addAll(headers);
+      var streamedResponse = await request.send();
+      var response = await http.Response.fromStream(streamedResponse);
+      if (response.statusCode == 204) {
+        Map<String, String> cachedPositions = getCachedBooksPositions() ?? {};
+        cachedPositions[key] = cfi;
+      }
+    } catch (err) {
+      throw err;
     }
   }
 

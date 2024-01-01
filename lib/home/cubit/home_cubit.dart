@@ -55,6 +55,18 @@ class HomeCubit extends Cubit<HomeState> {
     }
   }
 
+  Future<void> updateBookPosition(String key, String cfi) async {
+    emit(state.copyWith(loading: true, errorMessage: ""));
+    try {
+      await _bookRepository.updateBookPosition(key, cfi);
+      emit(state
+          .copyWith(loading: false, positions: <String, String>{key: cfi}));
+    } catch (e) {
+      emit(state.copyWith(loading: false, errorMessage: e.toString()));
+      logger.e("Error addBook", error: "$e");
+    }
+  }
+
   Future<void> deleteBook(String key) async {
     emit(state.copyWith(loading: true, errorMessage: ""));
     try {

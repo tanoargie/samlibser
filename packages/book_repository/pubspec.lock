@@ -146,10 +146,9 @@ packages:
   epub_view:
     dependency: "direct main"
     description:
-      name: epub_view
-      sha256: a1c68fb2feadf7f7764195e0f8d69f6e4f7d29e0638744ea9f981343eaea0c29
-      url: "https://pub.dev"
-    source: hosted
+      path: "../../../packages.flutter/packages/epub_view"
+      relative: true
+    source: path
     version: "3.2.0"
   epubx:
     dependency: "direct main"

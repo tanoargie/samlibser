@@ -37,7 +37,8 @@ dependencies:
   cupertino_icons: ^1.0.2
   file_picker: ^5.5.0
   epubx: ^4.0.0
-  epub_view: ^3.2.0
+  epub_view:
+    path: ../packages.flutter/packages/epub_view
   internet_file: ^1.2.0
   flutter_signin_button: ^2.0.0
   flutter_bloc: ^8.1.3

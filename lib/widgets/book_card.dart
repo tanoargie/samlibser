@@ -8,10 +8,16 @@ import 'package:samlibser/widgets/reader.dart';
 
 class BookCard extends StatelessWidget {
   const BookCard(
-      {super.key, required this.epubBook, required this.deleteCallback});
+      {super.key,
+      required this.epubBook,
+      required this.deleteCallback,
+      required this.updatePositionCallback,
+      this.cfi});
 
   final EpubBook epubBook;
   final VoidCallback deleteCallback;
+  final Function(String lastCfi) updatePositionCallback;
+  final String? cfi;
 
   static final _whitespaceRE = RegExp(r"\s+");
 
@@ -86,12 +92,17 @@ class BookCard extends StatelessWidget {
                                       onPressed: () => Navigator.push(
                                           context,
                                           MaterialPageRoute(
-                                              builder: (context) =>
-                                                  ReadingScreen(
-                                                      book: epubBook))),
-                                      child: const Text('Read',
-                                          style:
-                                              TextStyle(color: Colors.black87)))
+                                              builder: (context) => ReadingScreen(
+                                                  book: epubBook,
+                                                  cfi: cfi,
+                                                  updatePositionCallback:
+                                                      updatePositionCallback))),
+                                      child: Text(
+                                          (cfi?.isNotEmpty ?? false)
+                                              ? 'Continue Reading'
+                                              : 'Read',
+                                          style: const TextStyle(
+                                              color: Colors.black87)))
                                 ],
                               )
                             ])),
