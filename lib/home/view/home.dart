@@ -83,7 +83,7 @@ class HomePage extends StatelessWidget {
                 BlocBuilder<HomeCubit, HomeState>(builder: (context, state) {
               if (state.loading == false) {
                 Map<String, EpubBook> mapOfEpubs = state.books ?? {};
-                Map<String, String> mapOfPositions = state.positions ?? {};
+                Map<String, String> mapOfPositions = state.positions;
                 if (mapOfEpubs.isEmpty) {
                   return const Center(child: Text('No books!'));
                 }
