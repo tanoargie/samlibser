@@ -19,7 +19,30 @@ class HomeCubit extends Cubit<HomeState> {
       emit(state.copyWith(books: userBooks, loading: false));
     } catch (e) {
       emit(state.copyWith(loading: false, errorMessage: e.toString()));
-      logger.e("Error getBooks", error: "$e");
+      logger.e("Error getBooksFromServer", error: "$e");
+    }
+  }
+
+  Future<void> getBooksPositionsFromServer() async {
+    emit(state.copyWith(loading: true, errorMessage: ""));
+    try {
+      final userBooksPositions =
+          await _bookRepository.getBooksPositionsFromServer();
+      emit(state.copyWith(positions: userBooksPositions, loading: false));
+    } catch (e) {
+      emit(state.copyWith(loading: false, errorMessage: e.toString()));
+      logger.e("Error getBooksPositionsFromServer", error: "$e");
+    }
+  }
+
+  Future<void> getBooksPositions() async {
+    emit(state.copyWith(loading: true, errorMessage: ""));
+    try {
+      final userBooksPositions = await _bookRepository.getBooksPositions();
+      emit(state.copyWith(positions: userBooksPositions, loading: false));
+    } catch (e) {
+      emit(state.copyWith(loading: false, errorMessage: e.toString()));
+      logger.e("Error getBooksPositions", error: "$e");
     }
   }
 

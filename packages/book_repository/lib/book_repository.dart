@@ -60,6 +60,29 @@ class BookRepository {
     return _cache.read<Map<String, EpubBook>>(key: booksCacheKey) ?? null;
   }
 
+  Future<Map<String, String>> getBooksPositionsFromServer() async {
+    var token = await _authenticationRepository?.getCurrentUserToken();
+    try {
+      var response = await http.get(baseUrl, headers: {
+        'Authorization': "Bearer $token",
+      });
+      final responseJson = jsonDecode(response.body);
+      List<Book> userBooks = (responseJson["data"] ?? [])
+          .map<Book>((json) => Book.fromJson(json))
+          .toList();
+      Map<String, String> userBooksPositionsMap = {};
+      for (int loop = 0; loop < userBooks.length; loop++) {
+        userBooksPositionsMap.addEntries([
+          MapEntry(userBooks.elementAt(loop).id, userBooks.elementAt(loop).cfi)
+        ]);
+      }
+      writeCachedPositions(userBooksPositionsMap);
+      return userBooksPositionsMap;
+    } catch (err) {
+      throw err;
+    }
+  }
+
   Future<Map<String, EpubBook>> getBooksFromServer() async {
     var token = await _authenticationRepository?.getCurrentUserToken();
     try {
@@ -76,19 +99,23 @@ class BookRepository {
       List<EpubBook> books = await Future.wait<EpubBook>(
           files.map((file) => EpubDocument.openData(file)));
       Map<String, EpubBook> userBooksMap = {};
-      Map<String, String> userBooksPositionsMap = {};
       for (int loop = 0; loop < userBooks.length; loop++) {
         userBooksMap.addEntries(
             [MapEntry(userBooks.elementAt(loop).id, books.elementAt(loop))]);
-        userBooksPositionsMap.addEntries([
-          MapEntry(userBooks.elementAt(loop).id, userBooks.elementAt(loop).cfi)
-        ]);
       }
       writeCachedBooks(userBooksMap);
-      writeCachedPositions(userBooksPositionsMap);
       return userBooksMap;
     } catch (err) {
       throw err;
+    }
+  }
+
+  Future<Map<String, String>> getBooksPositions() async {
+    var currentPositions = getCachedBooksPositions();
+    if (currentPositions != null) {
+      return currentPositions;
+    } else {
+      return getBooksPositionsFromServer();
     }
   }
 
@@ -144,6 +171,7 @@ class BookRepository {
       if (response.statusCode == 204) {
         Map<String, String> cachedPositions = getCachedBooksPositions() ?? {};
         cachedPositions[key] = cfi;
+        writeCachedPositions(cachedPositions);
       }
     } catch (err) {
       throw err;
