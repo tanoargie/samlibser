@@ -34,7 +34,7 @@ class HomePage extends StatelessWidget {
   }
 
   List<BookCard> getEntries(Map<String, EpubBook> mapOfEpubs,
-      Map<String, String> mapOfPositions, BuildContext context) {
+      Map<String, String?> mapOfPositions, BuildContext context) {
     List<BookCard> listOfWidgets = [];
     for (var i = 0; i < mapOfEpubs.entries.length; i++) {
       listOfWidgets.add(BookCard(
@@ -89,7 +89,7 @@ class HomePage extends StatelessWidget {
                 BlocBuilder<HomeCubit, HomeState>(builder: (context, state) {
               if (state.loading == false) {
                 Map<String, EpubBook> mapOfEpubs = state.books ?? {};
-                Map<String, String> mapOfPositions = state.positions;
+                Map<String, String?> mapOfPositions = state.positions;
                 if (mapOfEpubs.isEmpty) {
                   return const Center(child: Text('No books!'));
                 }

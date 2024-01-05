@@ -10,7 +10,7 @@ final class HomeState extends Equatable {
   // map id -> epubBook
   final Map<String, EpubBook>? books;
   // map id -> last position
-  final Map<String, String> positions;
+  final Map<String, String?> positions;
   final bool loading;
   final String errorMessage;
 
@@ -19,11 +19,11 @@ final class HomeState extends Equatable {
 
   HomeState copyWith({
     Map<String, EpubBook>? books,
-    Map<String, String>? positions,
+    Map<String, String?>? positions,
     required bool loading,
     String? errorMessage,
   }) {
-    Map<String, String> newPositions = Map.from(this.positions);
+    Map<String, String?> newPositions = Map.from(this.positions);
     newPositions.addAll(positions ?? {});
     return HomeState(
         books: books ?? this.books,
