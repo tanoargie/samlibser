@@ -59,6 +59,7 @@ dependencies:
   logger: ^2.0.2+1
   image: ^3.3.0
   flutter_layout_grid: ^2.0.5
+  url_launcher: ^6.2.2
 
 dev_dependencies:
   flutter_test:
