@@ -64,9 +64,9 @@ class HomeCubit extends Cubit<HomeState> {
       final newBook = await _bookRepository.uploadBook();
       final savedBook = await _bookRepository.addBook(newBook);
       final addedPositions = savedBook.map((key, value) => MapEntry(key, ''));
-      final Map<String, String?> savedPositions = Map.of(state.positions)
+      final Map<String, String> savedPositions = Map.of(state.positions)
         ..addAll(addedPositions);
-      final Map<String, EpubBook> savedBooks = Map.of(state.books ?? {})
+      final Map<String, EpubBook> savedBooks = Map.of(state.books)
         ..addAll(savedBook);
       emit(state.copyWith(
           books: savedBooks, positions: savedPositions, loading: false));
@@ -97,7 +97,7 @@ class HomeCubit extends Cubit<HomeState> {
   Future<void> deleteBook(String key) async {
     emit(state.copyWith(loading: true, errorMessage: ""));
     try {
-      final Map<String, EpubBook> savedBooks = Map.of(state.books ?? {});
+      final Map<String, EpubBook> savedBooks = Map.of(state.books);
       await _bookRepository.deleteBook(key);
       savedBooks.remove(key);
       emit(state.copyWith(books: savedBooks, loading: false));

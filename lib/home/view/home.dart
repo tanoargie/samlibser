@@ -1,8 +1,8 @@
 import 'dart:math';
 
-import 'package:epub_view/epub_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:epubx/epubx.dart';
 import 'package:samlibser/app/bloc/app_bloc.dart';
 import 'package:samlibser/home/cubit/home_cubit.dart';
 import 'package:book_repository/book_repository.dart';
@@ -34,7 +34,7 @@ class HomePage extends StatelessWidget {
   }
 
   List<BookCard> getEntries(Map<String, EpubBook> mapOfEpubs,
-      Map<String, String?> mapOfPositions, BuildContext context) {
+      Map<String, String> mapOfPositions, BuildContext context) {
     List<BookCard> listOfWidgets = [];
     for (var i = 0; i < mapOfEpubs.entries.length; i++) {
       listOfWidgets.add(BookCard(
@@ -88,8 +88,8 @@ class HomePage extends StatelessWidget {
             }, child:
                 BlocBuilder<HomeCubit, HomeState>(builder: (context, state) {
               if (state.loading == false) {
-                Map<String, EpubBook> mapOfEpubs = state.books ?? {};
-                Map<String, String?> mapOfPositions = state.positions;
+                Map<String, EpubBook> mapOfEpubs = state.books;
+                Map<String, String> mapOfPositions = state.positions;
                 if (mapOfEpubs.isEmpty) {
                   return const Center(child: Text('No books!'));
                 }

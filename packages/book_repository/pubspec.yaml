@@ -15,7 +15,8 @@ dependencies:
   file_picker: ^5.5.0
   firebase_auth: ^4.10.0
   firebase_core: ^2.16.0
-  epubx: ^4.0.0
+  epubx:
+    path: ../../../epubx.dart
   epub_view:
     path: ../../../packages.flutter/packages/epub_view
   internet_file: ^1.2.0

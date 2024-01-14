@@ -47,12 +47,12 @@ class BookRepository {
     _cache.write(key: booksCacheKey, value: userBooks);
   }
 
-  void writeCachedPositions(Map<String, String?> userBooksPositions) {
+  void writeCachedPositions(Map<String, String> userBooksPositions) {
     _cache.write(key: booksPositionsCacheKey, value: userBooksPositions);
   }
 
-  Map<String, String?>? getCachedBooksPositions() {
-    return _cache.read<Map<String, String?>>(key: booksPositionsCacheKey) ??
+  Map<String, String>? getCachedBooksPositions() {
+    return _cache.read<Map<String, String>>(key: booksPositionsCacheKey) ??
         null;
   }
 
@@ -60,7 +60,7 @@ class BookRepository {
     return _cache.read<Map<String, EpubBook>>(key: booksCacheKey) ?? null;
   }
 
-  Future<Map<String, String?>> getBooksPositionsFromServer() async {
+  Future<Map<String, String>> getBooksPositionsFromServer() async {
     var token = await _authenticationRepository?.getCurrentUserToken();
     try {
       var response = await http.get(baseUrl, headers: {
@@ -70,10 +70,11 @@ class BookRepository {
       List<Book> userBooks = (responseJson["data"] ?? [])
           .map<Book>((json) => Book.fromJson(json))
           .toList();
-      Map<String, String?> userBooksPositionsMap = {};
+      Map<String, String> userBooksPositionsMap = {};
       for (int loop = 0; loop < userBooks.length; loop++) {
         userBooksPositionsMap.addEntries([
-          MapEntry(userBooks.elementAt(loop).id, userBooks.elementAt(loop).cfi)
+          MapEntry(
+              userBooks.elementAt(loop).id, userBooks.elementAt(loop).cfi ?? '')
         ]);
       }
       writeCachedPositions(userBooksPositionsMap);
@@ -110,7 +111,7 @@ class BookRepository {
     }
   }
 
-  Future<Map<String, String?>> getBooksPositions() async {
+  Future<Map<String, String>> getBooksPositions() async {
     var currentPositions = getCachedBooksPositions();
     if (currentPositions != null) {
       return currentPositions;
@@ -169,7 +170,7 @@ class BookRepository {
       var streamedResponse = await request.send();
       var response = await http.Response.fromStream(streamedResponse);
       if (response.statusCode == 204) {
-        Map<String, String?> cachedPositions = getCachedBooksPositions() ?? {};
+        Map<String, String> cachedPositions = getCachedBooksPositions() ?? {};
         cachedPositions[key] = cfi;
         writeCachedPositions(cachedPositions);
       }

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:epub_view/epub_view.dart';
+import 'package:epubx/epubx.dart';
 import 'package:flutter/widgets.dart' as image_widget;
 import 'package:image/image.dart' as image_ui;
 import 'dart:typed_data';
