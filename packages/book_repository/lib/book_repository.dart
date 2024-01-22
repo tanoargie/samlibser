@@ -1,11 +1,10 @@
 import 'dart:convert';
-import 'dart:typed_data';
 import 'package:cache/cache.dart';
 import 'package:http/http.dart' as http;
+import 'package:epubx/epubx.dart';
 import 'package:file_picker/file_picker.dart';
-import 'package:epub_view/epub_view.dart';
-import 'package:internet_file/internet_file.dart';
 import 'package:book_repository/models/book.dart';
+import 'package:book_repository/book_repository_client.dart';
 import 'package:authentication_repository/authentication_repository.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 
@@ -94,11 +93,8 @@ class BookRepository {
       List<Book> userBooks = (responseJson["data"] ?? [])
           .map<Book>((json) => Book.fromJson(json))
           .toList();
-      List<Uint8List> files = await Future.wait<Uint8List>(userBooks.map(
-          (book) => InternetFile.get(book.url,
-              headers: {"Access-Control-Allow-Origin": "*"})));
       List<EpubBook> books = await Future.wait<EpubBook>(
-          files.map((file) => EpubDocument.openData(file)));
+          userBooks.map((book) => BookRepositoryClient.getEpubFile(book.url)));
       Map<String, EpubBook> userBooksMap = {};
       for (int loop = 0; loop < userBooks.length; loop++) {
         userBooksMap.addEntries(
@@ -205,9 +201,7 @@ class BookRepository {
       }
       final responseJson = jsonDecode(response.body);
       Book book = Book.fromJson(responseJson['data']);
-      final ifile = await InternetFile.get(book.url,
-          headers: {"Access-Control-Allow-Origin": "*"});
-      final epub = await EpubDocument.openData(ifile);
+      final epub = await BookRepositoryClient.getEpubFile(book.url);
       final newEpub = <String, EpubBook>{book.id: epub};
       Map<String, EpubBook> cachedEpubs = getCachedBooks() ?? {};
       cachedEpubs.addAll(newEpub);

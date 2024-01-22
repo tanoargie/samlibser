@@ -1,4 +1,4 @@
-import 'package:epub_view/epub_view.dart';
+import 'package:epubx/epubx.dart';
 import 'package:logger/logger.dart';
 import 'package:book_repository/book_repository.dart';
 import 'package:bloc/bloc.dart';
