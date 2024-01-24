@@ -40,6 +40,16 @@ class _ReadingScreen extends State<ReadingScreen> {
     itemPositionsListener.itemPositions.addListener(positionListener);
   }
 
+  void jumpToChapter(int index) {
+    String contentFileName = widget.book.Chapters?[index].ContentFileName ?? '';
+    int indexInContent = (widget.book.Content?.Html?.keys ?? [])
+        .toList()
+        .indexWhere((element) => element == contentFileName);
+    if (indexInContent > 0) {
+      itemScrollController.jumpTo(index: indexInContent);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -61,12 +71,13 @@ class _ReadingScreen extends State<ReadingScreen> {
         endDrawer: Drawer(
           child: ListView.separated(
               separatorBuilder: (BuildContext context, int index) {
-                return const SizedBox(height: 6);
+                return const SizedBox(height: 8);
               },
               padding: const EdgeInsets.all(8),
               itemCount: widget.book.Chapters?.length ?? 0,
-              itemBuilder: (ctx, i) =>
-                  Text(widget.book.Chapters?[i].Title ?? '')),
+              itemBuilder: (ctx, i) => GestureDetector(
+                  onTap: () => jumpToChapter(i),
+                  child: Text(widget.book.Chapters?[i].Title ?? ''))),
         ),
         body: ScrollablePositionedList.builder(
           initialScrollIndex: int.tryParse(widget.cfi ?? '0') ?? 0,
