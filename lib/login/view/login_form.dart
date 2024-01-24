@@ -3,6 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:samlibser/login/cubit/login_cubit.dart';
 import 'package:samlibser/sign_up/view/sign_up_page.dart';
 import 'package:formz/formz.dart';
+import 'package:flutter/foundation.dart'
+    show defaultTargetPlatform, kIsWeb, TargetPlatform;
 
 class LoginForm extends StatelessWidget {
   const LoginForm({super.key});
@@ -44,8 +46,10 @@ class LoginForm extends StatelessWidget {
                   child: Column(children: [
                     _GoogleLoginButton(),
                     const SizedBox(height: 4),
-                    _AppleLoginButton(),
-                    const SizedBox(height: 4),
+                    if (defaultTargetPlatform == TargetPlatform.iOS)
+                      _AppleLoginButton(),
+                    if (defaultTargetPlatform == TargetPlatform.iOS)
+                      const SizedBox(height: 4),
                   ]))
             ],
           ),
