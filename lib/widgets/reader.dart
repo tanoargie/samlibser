@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:epubx/epubx.dart';
-import 'package:samlibser/widgets/book_text.dart';
+import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
+import 'package:flutter_html/flutter_html.dart';
+import '../utils/utils.dart';
 
 class ReadingScreen extends StatefulWidget {
   ReadingScreen(
@@ -20,6 +22,24 @@ class ReadingScreen extends StatefulWidget {
 }
 
 class _ReadingScreen extends State<ReadingScreen> {
+  int lastVisibleItem = 0;
+
+  final ItemScrollController itemScrollController = ItemScrollController();
+  final ScrollOffsetController scrollOffsetController =
+      ScrollOffsetController();
+  final ItemPositionsListener itemPositionsListener =
+      ItemPositionsListener.create();
+
+  void positionListener() {
+    lastVisibleItem = itemPositionsListener.itemPositions.value.last.index;
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    itemPositionsListener.itemPositions.addListener(positionListener);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -27,8 +47,7 @@ class _ReadingScreen extends State<ReadingScreen> {
             leading: IconButton(
                 icon: const Icon(Icons.arrow_back),
                 onPressed: () {
-                  // String lastCfi = epubController.generateEpubCfi() ?? "";
-                  // updatePositionCallback(lastCfi);
+                  widget.updatePositionCallback(lastVisibleItem.toString());
                   Navigator.of(context).pop(false);
                 }),
             title: RichText(
@@ -49,8 +68,23 @@ class _ReadingScreen extends State<ReadingScreen> {
               itemBuilder: (ctx, i) =>
                   Text(widget.book.Chapters?[i].Title ?? '')),
         ),
-        body: BookText(
-            chapters: widget.book.Content?.Html ?? {},
-            styles: widget.book.Content?.Css ?? {}));
+        body: ScrollablePositionedList.builder(
+          initialScrollIndex: int.tryParse(widget.cfi ?? '0') ?? 0,
+          itemCount: widget.book.Content?.Html?.length ?? 0,
+          itemBuilder: (context, index) => Html(
+              data:
+                  (widget.book.Content?.Html?.values.elementAt(index).Content ??
+                      ''),
+              style: parseStyles(widget.book.Content?.Css ?? {})),
+          itemScrollController: itemScrollController,
+          scrollOffsetController: scrollOffsetController,
+          itemPositionsListener: itemPositionsListener,
+        ));
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    itemPositionsListener.itemPositions.removeListener(positionListener);
   }
 }
