@@ -54,7 +54,6 @@ dependencies:
   firebase_auth: ^4.10.0
   firebase_core: ^2.16.0
   formz: ^0.6.1
-  logger: ^2.0.2+1
   image: ^3.3.0
   flutter_layout_grid: ^2.0.5
   url_launcher: ^6.2.2

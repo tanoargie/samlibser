@@ -1,5 +1,4 @@
 import 'package:epubx/epubx.dart';
-import 'package:logger/logger.dart';
 import 'package:book_repository/book_repository.dart';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
@@ -11,7 +10,6 @@ class HomeCubit extends Cubit<HomeState> {
   HomeCubit(this._bookRepository) : super(const HomeState());
 
   final BookRepository _bookRepository;
-  final logger = Logger();
 
   Future<void> getBooksFromServer() async {
     emit(state.copyWith(loading: true, errorMessage: ""));
