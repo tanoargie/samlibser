@@ -44,24 +44,6 @@ class AccountPage extends StatelessWidget {
                       ? CrossAxisAlignment.center
                       : CrossAxisAlignment.stretch,
                   children: [
-                    // OutlinedButton(
-                    //     style: const ButtonStyle(
-                    //         fixedSize: MaterialStatePropertyAll(Size.infinite)),
-                    //     onPressed: () {},
-                    //     child: const Row(
-                    //       mainAxisAlignment: MainAxisAlignment.start,
-                    //       children: [
-                    //         Icon(Icons.account_box),
-                    //         Padding(
-                    //           padding: EdgeInsets.symmetric(horizontal: 12),
-                    //           child: Text(
-                    //             'Personal Info',
-                    //           ),
-                    //         ),
-                    //         Spacer(),
-                    //         Icon(Icons.arrow_right),
-                    //       ],
-                    //     )),
                     TextButton(
                         style: TextButton.styleFrom(
                             foregroundColor: Colors.black87,
