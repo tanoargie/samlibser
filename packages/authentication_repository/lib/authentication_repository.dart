@@ -156,6 +156,25 @@ class LogInWithAppleFailure implements Exception {
   final String message;
 }
 
+class DeleteAccountFailure implements Exception {
+  const DeleteAccountFailure([
+    this.message = 'An unknown exception occurred.',
+  ]);
+
+  factory DeleteAccountFailure.fromCode(String code) {
+    switch (code) {
+      case 'requires-recent-login':
+        return const DeleteAccountFailure(
+          'Need to login again.',
+        );
+      default:
+        return const DeleteAccountFailure();
+    }
+  }
+
+  final String message;
+}
+
 /// {@template log_in_with_google_failure}
 /// Thrown during the sign in with google process if a failure occurs.
 /// https://pub.dev/documentation/firebase_auth/latest/firebase_auth/FirebaseAuth/signInWithCredential.html
@@ -227,7 +246,8 @@ class AuthenticationRepository {
         _firebaseAuth = firebaseAuth ?? firebase_auth.FirebaseAuth.instance,
         _googleSignIn = googleSignIn ??
             GoogleSignIn(
-                clientId: const String.fromEnvironment("GOOGLE_CLIENT_ID"));
+                clientId: const String.fromEnvironment("GOOGLE_CLIENT_ID"),
+                scopes: ['https://www.googleapis.com/auth/drive']);
 
   final CacheClient _cache;
   final firebase_auth.FirebaseAuth _firebaseAuth;
@@ -270,10 +290,14 @@ class AuthenticationRepository {
     }
   }
 
-  Future<void> deleteAccount(
-      BuildContext context, VoidCallback onSuccess) async {
-    await _firebaseAuth.currentUser?.delete();
-    onSuccess.call();
+  Future<void> deleteAccount() async {
+    try {
+      await _firebaseAuth.currentUser?.delete();
+    } on firebase_auth.FirebaseAuthException catch (e) {
+      throw DeleteAccountFailure.fromCode(e.code);
+    } catch (_) {
+      throw const DeleteAccountFailure();
+    }
   }
 
   Future<void> logInWithGoogle() async {
