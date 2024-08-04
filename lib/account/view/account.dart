@@ -5,6 +5,7 @@ import 'package:samlibser/app/bloc/app_bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:samlibser/login/view/login.dart';
 import 'package:samlibser/reset_password/view/reset_password_page.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 
 class AccountPage extends StatelessWidget {
   const AccountPage({super.key});
@@ -68,7 +69,7 @@ class AccountPage extends StatelessWidget {
                         style: TextButton.styleFrom(
                             foregroundColor: Colors.black87,
                             maximumSize: const Size.fromWidth(400)),
-                        onPressed: () => showDialog<String>(
+                        onPressed: () => showDialog<void>(
                               context: context,
                               builder: (BuildContext context) => Dialog(
                                   child: Container(
@@ -98,14 +99,18 @@ class AccountPage extends StatelessWidget {
                                                     await context
                                                         .read<
                                                             AuthenticationRepository>()
-                                                        .deleteAccount(context,
-                                                            () {
+                                                        .deleteAccount()
+                                                        .then((_) {
                                                       if (!context.mounted) {
                                                         return;
                                                       }
                                                       Navigator.of(context)
                                                           .push<void>(LoginPage
                                                               .route());
+                                                    }).catchError((err) {
+                                                      print(err.message);
+                                                      if (err.message ==
+                                                          'Need to login again.') {}
                                                     });
                                                   },
                                                   child: const Text('Yes'),
