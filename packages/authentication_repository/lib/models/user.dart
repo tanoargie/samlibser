@@ -7,7 +7,10 @@ import 'package:equatable/equatable.dart';
 /// {@endtemplate}
 class User extends Equatable {
   /// {@macro user}
-  const User({required this.id, this.email, this.name});
+  const User({required this.id, this.email, this.name, this.providerId});
+
+  /// Firebase's provider id if exists
+  final String? providerId;
 
   /// The current user's email address.
   final String? email;
