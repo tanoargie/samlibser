@@ -60,6 +60,8 @@ dependencies:
   sentry_flutter: ^7.14.0
   flutter_html: ^3.0.0-beta.2
   scrollable_positioned_list: ^0.3.8
+  sqflite: ^2.3.2
+  path: ^1.8.3
 
 dev_dependencies:
   flutter_test:
