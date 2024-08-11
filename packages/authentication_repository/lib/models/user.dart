@@ -31,5 +31,5 @@ class User extends Equatable {
   bool get isNotEmpty => this != User.empty;
 
   @override
-  List<Object?> get props => [email, id, name];
+  List<Object?> get props => [email, id, name, providerId];
 }
