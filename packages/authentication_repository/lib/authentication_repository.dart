@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
 import 'package:flutter/widgets.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:extension_google_sign_in_as_googleapis_auth/extension_google_sign_in_as_googleapis_auth.dart';
+import 'package:googleapis_auth/googleapis_auth.dart' as auth show AuthClient;
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:cache/cache.dart';
 import 'models/user.dart';
@@ -14,6 +16,15 @@ class ResetPasswordWithEmailAndPasswordFailure implements Exception {
   /// {@macro reset_password_with_email_and_password_failure}
   const ResetPasswordWithEmailAndPasswordFailure([
     this.message = 'An unknown exception occurred.',
+  ]);
+
+  final String message;
+}
+
+class AuthClientNotInitializedFailure implements Exception {
+  /// {@macro reset_password_with_email_and_password_failure}
+  const AuthClientNotInitializedFailure([
+    this.message = 'Auth client was not initialized!',
   ]);
 
   final String message;
@@ -265,6 +276,15 @@ class AuthenticationRepository {
       _cache.write(key: userCacheKey, value: user);
       return user;
     });
+  }
+
+  Future<auth.AuthClient> getAuthClient() async {
+    final auth.AuthClient? client = await _googleSignIn.authenticatedClient();
+    if (client == null) {
+      throw const AuthClientNotInitializedFailure();
+    } else {
+      return client;
+    }
   }
 
   Future<String?> getCurrentUserToken() async {
