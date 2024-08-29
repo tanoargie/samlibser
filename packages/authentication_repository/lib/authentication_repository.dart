@@ -4,17 +4,18 @@ import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
 import 'package:flutter/widgets.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:extension_google_sign_in_as_googleapis_auth/extension_google_sign_in_as_googleapis_auth.dart';
+import 'package:googleapis/drive/v3.dart' as drive show DriveApi;
 import 'package:googleapis_auth/googleapis_auth.dart' as auth show AuthClient;
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:cache/cache.dart';
 import 'models/user.dart';
 
 class AuthenticationRepository {
-  AuthenticationRepository({
-    CacheClient? cache,
-    firebase_auth.FirebaseAuth? firebaseAuth,
-    GoogleSignIn? googleSignIn,
-  })  : _cache = cache ?? CacheClient(),
+  AuthenticationRepository(
+      {CacheClient? cache,
+      firebase_auth.FirebaseAuth? firebaseAuth,
+      GoogleSignIn? googleSignIn})
+      : _cache = cache ?? CacheClient(),
         _firebaseAuth = firebaseAuth ?? firebase_auth.FirebaseAuth.instance,
         _googleSignIn = googleSignIn ??
             GoogleSignIn(
@@ -24,6 +25,8 @@ class AuthenticationRepository {
   final CacheClient _cache;
   final firebase_auth.FirebaseAuth _firebaseAuth;
   final GoogleSignIn _googleSignIn;
+
+  drive.DriveApi? googleDriveApi;
 
   @visibleForTesting
   bool isWeb = kIsWeb;
@@ -39,12 +42,12 @@ class AuthenticationRepository {
     });
   }
 
-  Future<auth.AuthClient> getAuthClient() async {
+  Future<void> initializeGoogleDriveApi() async {
     final auth.AuthClient? client = await _googleSignIn.authenticatedClient();
     if (client == null) {
       throw const AuthClientNotInitializedFailure();
     } else {
-      return client;
+      googleDriveApi = drive.DriveApi(client);
     }
   }
 
@@ -106,6 +109,7 @@ class AuthenticationRepository {
 
       await _firebaseAuth.signInWithCredential(credential);
       await _firebaseAuth.currentUser?.linkWithCredential(credential);
+      await initializeGoogleDriveApi();
     } on firebase_auth.FirebaseAuthException catch (e) {
       throw LogInWithGoogleFailure.fromCode(e.code);
     } catch (_) {
