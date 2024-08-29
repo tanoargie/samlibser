@@ -37,10 +37,14 @@ class BookRepository {
     return _cache.read<Map<String, EpubBook>>(key: booksCacheKey) ?? null;
   }
 
+  Future<drive.DriveApi> getDriveApi() async {
+    final authClient = await _authenticationRepository?.getAuthClient();
+    return drive.DriveApi(authClient!);
+  }
+
   Future<drive.File> uploadDriveDocument(
       drive.File file, PlatformFile platformFile) async {
-    final authClient = await _authenticationRepository?.getAuthClient();
-    final driveApi = drive.DriveApi(authClient!);
+    final driveApi = await getDriveApi();
 
     Stream<List<int>>? stream = platformFile.readStream;
     int size = platformFile.size;
@@ -49,22 +53,19 @@ class BookRepository {
   }
 
   Future<drive.FileList> getDriveDocuments() async {
-    final authClient = await _authenticationRepository?.getAuthClient();
-    final driveApi = drive.DriveApi(authClient!);
+    final driveApi = await getDriveApi();
 
     return driveApi.files.list();
   }
 
   Future<void> deleteDriveDocument(String fileId) async {
-    final authClient = await _authenticationRepository?.getAuthClient();
-    final driveApi = drive.DriveApi(authClient!);
+    final driveApi = await getDriveApi();
 
     return driveApi.files.delete(fileId);
   }
 
   Future<drive.File> updateDriveDocument(drive.File file) async {
-    final authClient = await _authenticationRepository?.getAuthClient();
-    final driveApi = drive.DriveApi(authClient!);
+    final driveApi = await getDriveApi();
 
     return driveApi.files.update(file, file.id!);
   }
