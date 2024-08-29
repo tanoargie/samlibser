@@ -42,15 +42,6 @@ class AuthenticationRepository {
     });
   }
 
-  Future<void> initializeGoogleDriveApi() async {
-    final auth.AuthClient? client = await _googleSignIn.authenticatedClient();
-    if (client == null) {
-      throw const AuthClientNotInitializedFailure();
-    } else {
-      googleDriveApi = drive.DriveApi(client);
-    }
-  }
-
   Future<String?> getCurrentUserToken() async {
     firebase_auth.IdTokenResult? result =
         await _firebaseAuth.currentUser?.getIdTokenResult();
@@ -106,10 +97,15 @@ class AuthenticationRepository {
           idToken: googleAuth.idToken,
         );
       }
+      final auth.AuthClient? client = await _googleSignIn.authenticatedClient();
+      if (client == null) {
+        throw const AuthClientNotInitializedFailure();
+      } else {
+        googleDriveApi = new drive.DriveApi(client);
+      }
 
       await _firebaseAuth.signInWithCredential(credential);
       await _firebaseAuth.currentUser?.linkWithCredential(credential);
-      await initializeGoogleDriveApi();
     } on firebase_auth.FirebaseAuthException catch (e) {
       throw LogInWithGoogleFailure.fromCode(e.code);
     } catch (_) {

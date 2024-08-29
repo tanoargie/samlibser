@@ -47,7 +47,12 @@ class BookRepository {
   }
 
   Future<drive.FileList> getDriveDocuments() async {
-    return _authenticationRepository!.googleDriveApi!.files.list();
+    if (_authenticationRepository?.googleDriveApi != null) {
+      return _authenticationRepository!.googleDriveApi!.files
+          .list(spaces: 'appDataFolder');
+    } else {
+      return drive.FileList();
+    }
   }
 
   Future<void> deleteDriveDocument(String fileId) async {
