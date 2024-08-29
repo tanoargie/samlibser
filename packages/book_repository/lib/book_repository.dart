@@ -155,7 +155,7 @@ class BookRepository {
       writeCachedBooks(cachedEpubs);
       return newEpub;
     } catch (err) {
-      throw err;
+      throw UploadBookException();
     }
   }
 }

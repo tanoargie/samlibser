@@ -192,3 +192,5 @@ class LogInWithGoogleFailure implements Exception {
 
   final String message;
 }
+
+class LogOutFailure implements Exception {}
