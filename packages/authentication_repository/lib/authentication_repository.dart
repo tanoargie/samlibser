@@ -293,6 +293,11 @@ class AuthenticationRepository {
     return result?.token ?? '';
   }
 
+  Future<String?> getCurrentUserUID() async {
+    String? result = await _firebaseAuth.currentUser?.uid;
+    return result ?? '';
+  }
+
   User get currentUser {
     return _cache.read<User>(key: userCacheKey) ?? User.empty;
   }

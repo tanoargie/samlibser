@@ -16,9 +16,7 @@ class HomePage extends StatelessWidget {
     return MaterialPage<void>(
         child: BlocProvider<HomeCubit>(
             create: (context) {
-              return HomeCubit(context.read<BookRepository>())
-                ..getBooks()
-                ..getBooksPositions();
+              return HomeCubit(context.read<BookRepository>())..getBooks();
             },
             child: const HomePage()));
   }
@@ -63,7 +61,6 @@ class HomePage extends StatelessWidget {
             icon: const Icon(Icons.refresh),
             onPressed: () {
               context.read<HomeCubit>().getBooksFromServer();
-              context.read<HomeCubit>().getBooksPositionsFromServer();
             },
           ),
           title: const Text('Home'),

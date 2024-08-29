@@ -1,12 +1,10 @@
-import 'dart:convert';
+import 'package:book_repository/book_repository_client.dart';
 import 'package:cache/cache.dart';
-import 'package:http/http.dart' as http;
+import 'package:path/path.dart' as p;
+import 'package:googleapis/drive/v3.dart' as drive;
 import 'package:epubx/epubx.dart';
 import 'package:file_picker/file_picker.dart';
-import 'package:book_repository/models/book.dart';
-import 'package:book_repository/book_repository_client.dart';
 import 'package:authentication_repository/authentication_repository.dart';
-import 'package:flutter/foundation.dart' show kIsWeb;
 
 class DuplicatedRecord implements Exception {
   const DuplicatedRecord();
@@ -17,13 +15,31 @@ class DuplicatedRecord implements Exception {
 class FileUploadCancelled implements Exception {
   const FileUploadCancelled();
 
-  static String message = "Cancelled upload";
+  static String message = "Cancelled upload!";
 }
 
-class DeleteRecord implements Exception {
-  const DeleteRecord();
+class DeleteRecordException implements Exception {
+  const DeleteRecordException();
 
   static String message = "Could not delete book!";
+}
+
+class UpdatePositionException implements Exception {
+  const UpdatePositionException();
+
+  static String message = "Could not update position book!";
+}
+
+class UpdateBookPositionsException implements Exception {
+  const UpdateBookPositionsException();
+
+  static String message = "Could not update book position!";
+}
+
+class UploadBookException implements Exception {
+  const UploadBookException();
+
+  static String message = "Could not upload book!";
 }
 
 class BookRepository {
@@ -36,9 +52,6 @@ class BookRepository {
   final CacheClient _cache;
   final AuthenticationRepository? _authenticationRepository;
 
-  final baseUrl =
-      Uri.https(const String.fromEnvironment('BASE_URL'), '/api/books');
-
   static const booksCacheKey = '__books_cache_key__';
   static const booksPositionsCacheKey = '__books_positions_cache_key__';
 
@@ -46,7 +59,7 @@ class BookRepository {
     _cache.write(key: booksCacheKey, value: userBooks);
   }
 
-  void writeCachedPositions(Map<String, String> userBooksPositions) {
+  void writeCacheBooksPositions(Map<String, String> userBooksPositions) {
     _cache.write(key: booksPositionsCacheKey, value: userBooksPositions);
   }
 
@@ -59,60 +72,60 @@ class BookRepository {
     return _cache.read<Map<String, EpubBook>>(key: booksCacheKey) ?? null;
   }
 
-  Future<Map<String, String>> getBooksPositionsFromServer() async {
-    var token = await _authenticationRepository?.getCurrentUserToken();
-    try {
-      var response = await http.get(baseUrl, headers: {
-        'Authorization': "Bearer $token",
-      });
-      final responseJson = jsonDecode(response.body);
-      List<Book> userBooks = (responseJson["data"] ?? [])
-          .map<Book>((json) => Book.fromJson(json))
-          .toList();
-      Map<String, String> userBooksPositionsMap = {};
-      for (int loop = 0; loop < userBooks.length; loop++) {
-        userBooksPositionsMap.addEntries([
-          MapEntry(
-              userBooks.elementAt(loop).id, userBooks.elementAt(loop).cfi ?? '')
-        ]);
-      }
-      writeCachedPositions(userBooksPositionsMap);
-      return userBooksPositionsMap;
-    } catch (err) {
-      throw err;
-    }
+  Future<drive.File> uploadDriveDocument(
+      drive.File file, PlatformFile platformFile) async {
+    final authClient = await _authenticationRepository?.getAuthClient();
+    final driveApi = drive.DriveApi(authClient!);
+
+    Stream<List<int>>? stream = platformFile.readStream;
+    int size = platformFile.size;
+
+    return driveApi.files.create(file, uploadMedia: drive.Media(stream!, size));
+  }
+
+  Future<drive.FileList> getDriveDocuments() async {
+    final authClient = await _authenticationRepository?.getAuthClient();
+    final driveApi = drive.DriveApi(authClient!);
+
+    return driveApi.files.list();
+  }
+
+  Future<void> deleteDriveDocument(String fileId) async {
+    final authClient = await _authenticationRepository?.getAuthClient();
+    final driveApi = drive.DriveApi(authClient!);
+
+    return driveApi.files.delete(fileId);
+  }
+
+  Future<drive.File> updateDriveDocument(drive.File file) async {
+    final authClient = await _authenticationRepository?.getAuthClient();
+    final driveApi = drive.DriveApi(authClient!);
+
+    return driveApi.files.update(file, file.id!);
   }
 
   Future<Map<String, EpubBook>> getBooksFromServer() async {
-    var token = await _authenticationRepository?.getCurrentUserToken();
     try {
-      var response = await http.get(baseUrl, headers: {
-        'Authorization': "Bearer $token",
-      });
-      final responseJson = jsonDecode(response.body);
-      List<Book> userBooks = (responseJson["data"] ?? [])
-          .map<Book>((json) => Book.fromJson(json))
-          .toList();
-      List<EpubBook> books = await Future.wait<EpubBook>(
-          userBooks.map((book) => BookRepositoryClient.getEpubFile(book.url)));
       Map<String, EpubBook> userBooksMap = {};
-      for (int loop = 0; loop < userBooks.length; loop++) {
-        userBooksMap.addEntries(
-            [MapEntry(userBooks.elementAt(loop).id, books.elementAt(loop))]);
-      }
+      Map<String, String> userBooksPositionsMap = {};
+      drive.FileList files = await getDriveDocuments();
+      files.files?.forEach((file) async {
+        if (file.webContentLink != null && file.id != null) {
+          EpubBook book =
+              await BookRepositoryClient.getEpubFile(file.webContentLink!);
+          userBooksMap.addEntries([MapEntry(file.id!, book)]);
+          if (file.appProperties != null &&
+              file.appProperties!.containsKey('cfi')) {
+            userBooksPositionsMap
+                .addEntries([MapEntry(file.id!, file.appProperties!['cfi']!)]);
+          }
+        }
+      });
       writeCachedBooks(userBooksMap);
+      writeCacheBooksPositions(userBooksPositionsMap);
       return userBooksMap;
     } catch (err) {
       throw err;
-    }
-  }
-
-  Future<Map<String, String>> getBooksPositions() async {
-    var currentPositions = getCachedBooksPositions();
-    if (currentPositions != null) {
-      return currentPositions;
-    } else {
-      return getBooksPositionsFromServer();
     }
   }
 
@@ -139,70 +152,49 @@ class BookRepository {
   }
 
   Future<void> deleteBook(String key) async {
-    var token = await _authenticationRepository?.getCurrentUserToken();
     try {
-      await http.delete(Uri.parse('$baseUrl/$key'),
-          headers: {'Authorization': "Bearer $token"});
+      await deleteDriveDocument(key);
       Map<String, EpubBook> cachedEpubs = getCachedBooks() ?? {};
+      Map<String, String> cachedEpubsPositions =
+          getCachedBooksPositions() ?? {};
       cachedEpubs.remove(key);
+      cachedEpubsPositions.remove(key);
       writeCachedBooks(cachedEpubs);
+      writeCacheBooksPositions(cachedEpubsPositions);
     } catch (e) {
-      throw DeleteRecord();
+      throw DeleteRecordException();
     }
   }
 
   Future<void> updateBookPosition(String key, String cfi) async {
-    var token = await _authenticationRepository?.getCurrentUserToken();
     try {
-      Map<String, String> headers = {
-        "Authorization": "Bearer $token",
-        "Content-Type": "multipart/form-data;"
-      };
-      Map<String, String> body = <String, String>{"cfi": cfi};
-      var request =
-          await http.MultipartRequest("PATCH", Uri.parse('$baseUrl/$key'));
-      request.fields.addAll(body);
-      request.headers.addAll(headers);
-      var streamedResponse = await request.send();
-      var response = await http.Response.fromStream(streamedResponse);
-      if (response.statusCode == 204) {
-        Map<String, String> cachedPositions = getCachedBooksPositions() ?? {};
-        cachedPositions[key] = cfi;
-        writeCachedPositions(cachedPositions);
+      Map<String, String> cachedEpubsPositions =
+          getCachedBooksPositions() ?? {};
+      cachedEpubsPositions[key] = cfi;
+      writeCacheBooksPositions(cachedEpubsPositions);
+      drive.FileList files = await getDriveDocuments();
+      drive.File? file =
+          files.files?.firstWhere((element) => element.id == key);
+      if (file != null) {
+        file.appProperties!['cfi'] = cfi;
+        await updateDriveDocument(file);
       }
     } catch (err) {
-      throw err;
+      throw UpdateBookPositionsException();
     }
   }
 
   Future<Map<String, EpubBook>> addBook(PlatformFile bookFile) async {
-    var token = await _authenticationRepository?.getCurrentUserToken();
     try {
-      Map<String, String> headers = {
-        "Authorization": "Bearer $token",
-        "Content-Type": "multipart/form-data;"
-      };
-      var request = http.MultipartRequest('POST', baseUrl);
-      var file;
-      if (kIsWeb) {
-        file = await http.MultipartFile.fromBytes(
-            'file', bookFile.bytes?.toList() ?? [],
-            filename: bookFile.name);
-      } else {
-        file = await http.MultipartFile.fromPath('file', bookFile.path ?? "",
-            filename: bookFile.name);
-      }
-      request.headers.addAll(headers);
-      request.files.add(file);
-      var streamedResponse = await request.send();
-      var response = await http.Response.fromStream(streamedResponse);
-      if (response.statusCode == 409) {
-        throw DuplicatedRecord();
-      }
-      final responseJson = jsonDecode(response.body);
-      Book book = Book.fromJson(responseJson['data']);
-      final epub = await BookRepositoryClient.getEpubFile(book.url);
-      final newEpub = <String, EpubBook>{book.id: epub};
+      drive.File fileToUpload = drive.File();
+      fileToUpload.name = p.basename(bookFile.path!);
+      drive.File newFile = await uploadDriveDocument(
+        fileToUpload,
+        bookFile,
+      );
+      final epub =
+          await BookRepositoryClient.getEpubFile(newFile.webContentLink!);
+      final newEpub = <String, EpubBook>{newFile.id!: epub};
       Map<String, EpubBook> cachedEpubs = getCachedBooks() ?? {};
       cachedEpubs.addAll(newEpub);
       writeCachedBooks(cachedEpubs);

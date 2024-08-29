@@ -22,29 +22,6 @@ class HomeCubit extends Cubit<HomeState> {
     }
   }
 
-  Future<void> getBooksPositionsFromServer() async {
-    emit(state.copyWith(loading: true, errorMessage: ""));
-    try {
-      final userBooksPositions =
-          await _bookRepository.getBooksPositionsFromServer();
-      emit(state.copyWith(positions: userBooksPositions, loading: false));
-    } catch (exception, stack) {
-      emit(state.copyWith(loading: false, errorMessage: exception.toString()));
-      await Sentry.captureException(exception, stackTrace: stack);
-    }
-  }
-
-  Future<void> getBooksPositions() async {
-    emit(state.copyWith(loading: true, errorMessage: ""));
-    try {
-      final userBooksPositions = await _bookRepository.getBooksPositions();
-      emit(state.copyWith(positions: userBooksPositions, loading: false));
-    } catch (exception, stack) {
-      emit(state.copyWith(loading: false, errorMessage: exception.toString()));
-      await Sentry.captureException(exception, stackTrace: stack);
-    }
-  }
-
   Future<void> getBooks() async {
     emit(state.copyWith(loading: true, errorMessage: ""));
     try {
