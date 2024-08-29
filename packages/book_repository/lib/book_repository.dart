@@ -80,7 +80,7 @@ class BookRepository {
       writeCacheBooksPositions(userBooksPositionsMap);
       return userBooksMap;
     } catch (err) {
-      throw err;
+      throw GetBooksException();
     }
   }
 

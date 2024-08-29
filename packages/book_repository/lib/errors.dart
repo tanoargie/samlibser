@@ -16,12 +16,6 @@ class DeleteRecordException implements Exception {
   static String message = "Could not delete book!";
 }
 
-class UpdatePositionException implements Exception {
-  const UpdatePositionException();
-
-  static String message = "Could not update position book!";
-}
-
 class UpdateBookPositionsException implements Exception {
   const UpdateBookPositionsException();
 
@@ -32,4 +26,10 @@ class UploadBookException implements Exception {
   const UploadBookException();
 
   static String message = "Could not upload book!";
+}
+
+class GetBooksException implements Exception {
+  const GetBooksException();
+
+  static String message = "Could not retrieve books!";
 }
