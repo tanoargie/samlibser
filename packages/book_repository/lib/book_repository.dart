@@ -1,46 +1,11 @@
 import 'package:book_repository/book_repository_client.dart';
+import 'package:book_repository/errors.dart';
 import 'package:cache/cache.dart';
 import 'package:path/path.dart' as p;
 import 'package:googleapis/drive/v3.dart' as drive;
 import 'package:epubx/epubx.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:authentication_repository/authentication_repository.dart';
-
-class DuplicatedRecord implements Exception {
-  const DuplicatedRecord();
-
-  static String message = "Duplicated book!";
-}
-
-class FileUploadCancelled implements Exception {
-  const FileUploadCancelled();
-
-  static String message = "Cancelled upload!";
-}
-
-class DeleteRecordException implements Exception {
-  const DeleteRecordException();
-
-  static String message = "Could not delete book!";
-}
-
-class UpdatePositionException implements Exception {
-  const UpdatePositionException();
-
-  static String message = "Could not update position book!";
-}
-
-class UpdateBookPositionsException implements Exception {
-  const UpdateBookPositionsException();
-
-  static String message = "Could not update book position!";
-}
-
-class UploadBookException implements Exception {
-  const UploadBookException();
-
-  static String message = "Could not upload book!";
-}
 
 class BookRepository {
   BookRepository(
