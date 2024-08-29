@@ -46,8 +46,8 @@ class LoginForm extends StatelessWidget {
                   child: Column(children: [
                     _GoogleLoginButton(),
                     const SizedBox(height: 4),
-                    if (defaultTargetPlatform == TargetPlatform.iOS)
-                      _AppleLoginButton(),
+                    // if (defaultTargetPlatform == TargetPlatform.iOS)
+                    //   _AppleLoginButton(),
                     if (defaultTargetPlatform == TargetPlatform.iOS)
                       const SizedBox(height: 4),
                   ]))
