@@ -4,6 +4,7 @@ import 'package:equatable/equatable.dart';
 import 'package:form_inputs/password.dart';
 import 'package:form_inputs/confirmed_password.dart';
 import 'package:formz/formz.dart';
+import 'package:authentication_repository/errors.dart';
 
 part 'reset_password_state.dart';
 

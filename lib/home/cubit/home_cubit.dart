@@ -3,6 +3,7 @@ import 'package:book_repository/book_repository.dart';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
+import 'package:book_repository/errors.dart';
 
 part 'home_state.dart';
 

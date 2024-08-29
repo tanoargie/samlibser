@@ -5,6 +5,7 @@ import 'package:form_inputs/password.dart';
 import 'package:form_inputs/confirmed_password.dart';
 import 'package:form_inputs/email.dart';
 import 'package:formz/formz.dart';
+import 'package:authentication_repository/errors.dart';
 
 part 'sign_up_state.dart';
 
