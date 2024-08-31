@@ -20,7 +20,12 @@ class AuthenticationRepository {
         _googleSignIn = googleSignIn ??
             GoogleSignIn(
                 clientId: const String.fromEnvironment("GOOGLE_CLIENT_ID"),
-                scopes: ['https://www.googleapis.com/auth/drive']);
+                scopes: [
+                  'https://www.googleapis.com/auth/drive',
+                  'https://www.googleapis.com/auth/drive.appdata',
+                  'https://www.googleapis.com/auth/drive.file',
+                  'https://www.googleapis.com/auth/drive.metadata'
+                ]);
 
   final CacheClient _cache;
   final firebase_auth.FirebaseAuth _firebaseAuth;
