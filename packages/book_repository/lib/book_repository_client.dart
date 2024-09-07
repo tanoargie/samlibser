@@ -1,11 +1,9 @@
 import 'package:epubx/epubx.dart';
-import 'package:http/http.dart';
+import 'package:googleapis/drive/v3.dart' as drive;
 
 class BookRepositoryClient {
-  static Future<EpubBook> getEpubFile(String url) async {
-    List<int> bookBytes = await readBytes(Uri.parse(url),
-        headers: {"Access-Control-Allow-Origin": "*"});
-    EpubBook book = await EpubReader.readBook(bookBytes);
-    return book;
+  static Future<EpubBook> getEpubFile(drive.Media mediaFile) async {
+    final data = await mediaFile.stream.first;
+    return EpubReader.readBook(data);
   }
 }

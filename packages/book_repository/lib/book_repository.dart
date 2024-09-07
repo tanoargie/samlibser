@@ -46,6 +46,14 @@ class BookRepository {
         .create(file, uploadMedia: drive.Media(stream!, size));
   }
 
+  Future<Object?> getDriveDocument(String fileId) async {
+    if (_authenticationRepository?.googleDriveApi != null) {
+      return _authenticationRepository!.googleDriveApi!.files
+          .get(fileId, downloadOptions: drive.DownloadOptions.fullMedia);
+    }
+    return null;
+  }
+
   Future<drive.FileList> getDriveDocuments() async {
     if (_authenticationRepository?.googleDriveApi != null) {
       return _authenticationRepository!.googleDriveApi!.files
@@ -71,8 +79,8 @@ class BookRepository {
       drive.FileList files = await getDriveDocuments();
       files.files?.forEach((file) async {
         if (file.webContentLink != null && file.id != null) {
-          EpubBook book =
-              await BookRepositoryClient.getEpubFile(file.webContentLink!);
+          final epubMedia = await getDriveDocument(file.id!) as drive.Media;
+          EpubBook book = await BookRepositoryClient.getEpubFile(epubMedia);
           userBooksMap.addEntries([MapEntry(file.id!, book)]);
           if (file.appProperties != null &&
               file.appProperties!.containsKey('cfi')) {
@@ -85,6 +93,7 @@ class BookRepository {
       writeCacheBooksPositions(userBooksPositionsMap);
       return userBooksMap;
     } catch (err) {
+      print(err);
       throw GetBooksException();
     }
   }
@@ -101,6 +110,7 @@ class BookRepository {
   Future<PlatformFile> uploadBook() async {
     FilePickerResult? result = await FilePicker.platform.pickFiles(
       type: FileType.custom,
+      withReadStream: true,
       allowedExtensions: ['epub'],
     );
 
@@ -152,14 +162,15 @@ class BookRepository {
         fileToUpload,
         bookFile,
       );
-      final epub =
-          await BookRepositoryClient.getEpubFile(newFile.webContentLink!);
+      final epubMedia = await getDriveDocument(newFile.id!) as drive.Media;
+      final epub = await BookRepositoryClient.getEpubFile(epubMedia);
       final newEpub = <String, EpubBook>{newFile.id!: epub};
       Map<String, EpubBook> cachedEpubs = getCachedBooks() ?? {};
       cachedEpubs.addAll(newEpub);
       writeCachedBooks(cachedEpubs);
       return newEpub;
     } catch (err) {
+      print(err);
       throw UploadBookException();
     }
   }
