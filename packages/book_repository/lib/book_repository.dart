@@ -77,23 +77,24 @@ class BookRepository {
       Map<String, EpubBook> userBooksMap = {};
       Map<String, String> userBooksPositionsMap = {};
       drive.FileList files = await getDriveDocuments();
-      files.files?.forEach((file) async {
-        if (file.webContentLink != null && file.id != null) {
-          final epubMedia = await getDriveDocument(file.id!) as drive.Media;
-          EpubBook book = await BookRepositoryClient.getEpubFile(epubMedia);
-          userBooksMap.addEntries([MapEntry(file.id!, book)]);
-          if (file.appProperties != null &&
-              file.appProperties!.containsKey('cfi')) {
-            userBooksPositionsMap
-                .addEntries([MapEntry(file.id!, file.appProperties!['cfi']!)]);
+      if (files.files != null) {
+        for (var file in files.files!) {
+          if (file.id != null) {
+            final epubMedia = await getDriveDocument(file.id!) as drive.Media;
+            EpubBook book = await BookRepositoryClient.getEpubFile(epubMedia);
+            userBooksMap.addEntries([MapEntry(file.id!, book)]);
+            if (file.appProperties != null &&
+                file.appProperties!.containsKey('cfi')) {
+              userBooksPositionsMap.addEntries(
+                  [MapEntry(file.id!, file.appProperties!['cfi']!)]);
+            }
           }
         }
-      });
+      }
       writeCachedBooks(userBooksMap);
       writeCacheBooksPositions(userBooksPositionsMap);
       return userBooksMap;
     } catch (err) {
-      print(err);
       throw GetBooksException();
     }
   }
@@ -158,6 +159,7 @@ class BookRepository {
     try {
       drive.File fileToUpload = drive.File();
       fileToUpload.name = p.basename(bookFile.path!);
+      fileToUpload.parents = ['appDataFolder'];
       drive.File newFile = await uploadDriveDocument(
         fileToUpload,
         bookFile,
