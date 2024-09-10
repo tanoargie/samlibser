@@ -108,7 +108,6 @@ class AccountPage extends StatelessWidget {
                                                           .push<void>(LoginPage
                                                               .route());
                                                     }).catchError((err) {
-                                                      print(err.message);
                                                       if (err.message ==
                                                           'Need to login again.') {}
                                                     });
