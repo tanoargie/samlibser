@@ -67,9 +67,9 @@ class BookRepository {
     return _authenticationRepository!.googleDriveApi!.files.delete(fileId);
   }
 
-  Future<drive.File> updateDriveDocument(drive.File file) async {
+  Future<drive.File> updateDriveDocument(String id, drive.File file) async {
     return _authenticationRepository!.googleDriveApi!.files
-        .update(file, file.id!);
+        .update(file, id, $fields: 'appProperties');
   }
 
   Future<Map<String, EpubBook>> getBooksFromServer() async {
@@ -143,13 +143,8 @@ class BookRepository {
           getCachedBooksPositions() ?? {};
       cachedEpubsPositions[key] = cfi;
       writeCacheBooksPositions(cachedEpubsPositions);
-      drive.FileList files = await getDriveDocuments();
-      drive.File? file =
-          files.files?.firstWhere((element) => element.id == key);
-      if (file != null) {
-        file.appProperties!['cfi'] = cfi;
-        await updateDriveDocument(file);
-      }
+      final file = new drive.File(appProperties: {"cfi": cfi});
+      await updateDriveDocument(key, file);
     } catch (err) {
       throw UpdateBookPositionsException();
     }
@@ -172,7 +167,6 @@ class BookRepository {
       writeCachedBooks(cachedEpubs);
       return newEpub;
     } catch (err) {
-      print(err);
       throw UploadBookException();
     }
   }
