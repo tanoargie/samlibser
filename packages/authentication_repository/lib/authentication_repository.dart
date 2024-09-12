@@ -1,16 +1,17 @@
 import 'dart:async';
 import 'package:authentication_repository/errors.dart';
+import 'package:authentication_repository/google_drive_repository.dart';
 import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
 import 'package:flutter/widgets.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:extension_google_sign_in_as_googleapis_auth/extension_google_sign_in_as_googleapis_auth.dart';
-import 'package:googleapis/drive/v3.dart' as drive show DriveApi;
 import 'package:googleapis_auth/googleapis_auth.dart' as auth show AuthClient;
 import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:googleapis/drive/v3.dart' as drive;
 import 'package:cache/cache.dart';
 import 'models/user.dart';
 
-class AuthenticationRepository {
+class AuthenticationRepository with GoogleDriveRepository {
   AuthenticationRepository(
       {CacheClient? cache,
       firebase_auth.FirebaseAuth? firebaseAuth,
@@ -30,8 +31,6 @@ class AuthenticationRepository {
   final CacheClient _cache;
   final firebase_auth.FirebaseAuth _firebaseAuth;
   final GoogleSignIn _googleSignIn;
-
-  drive.DriveApi? googleDriveApi;
 
   @visibleForTesting
   bool isWeb = kIsWeb;
@@ -106,7 +105,7 @@ class AuthenticationRepository {
       if (client == null) {
         throw const AuthClientNotInitializedFailure();
       } else {
-        googleDriveApi = new drive.DriveApi(client);
+        this._googleDriveApi = new drive.DriveApi(client);
       }
 
       await _firebaseAuth.signInWithCredential(credential);

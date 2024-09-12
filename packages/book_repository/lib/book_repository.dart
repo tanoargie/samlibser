@@ -37,50 +37,17 @@ class BookRepository {
     return _cache.read<Map<String, EpubBook>>(key: booksCacheKey) ?? null;
   }
 
-  Future<drive.File> uploadDriveDocument(
-      drive.File file, PlatformFile platformFile) async {
-    Stream<List<int>>? stream = platformFile.readStream;
-    int size = platformFile.size;
-
-    return _authenticationRepository!.googleDriveApi!.files
-        .create(file, uploadMedia: drive.Media(stream!, size));
-  }
-
-  Future<Object?> getDriveDocument(String fileId) async {
-    if (_authenticationRepository?.googleDriveApi != null) {
-      return _authenticationRepository!.googleDriveApi!.files
-          .get(fileId, downloadOptions: drive.DownloadOptions.fullMedia);
-    }
-    return null;
-  }
-
-  Future<drive.FileList> getDriveDocuments() async {
-    if (_authenticationRepository?.googleDriveApi != null) {
-      return _authenticationRepository!.googleDriveApi!.files
-          .list(spaces: 'appDataFolder');
-    } else {
-      return drive.FileList();
-    }
-  }
-
-  Future<void> deleteDriveDocument(String fileId) async {
-    return _authenticationRepository!.googleDriveApi!.files.delete(fileId);
-  }
-
-  Future<drive.File> updateDriveDocument(String id, drive.File file) async {
-    return _authenticationRepository!.googleDriveApi!.files
-        .update(file, id, $fields: 'appProperties');
-  }
-
   Future<Map<String, EpubBook>> getBooksFromServer() async {
     try {
       Map<String, EpubBook> userBooksMap = {};
       Map<String, String> userBooksPositionsMap = {};
-      drive.FileList files = await getDriveDocuments();
-      if (files.files != null) {
-        for (var file in files.files!) {
+      drive.FileList? files =
+          await _authenticationRepository?.getDriveDocuments();
+      if (files?.files != null) {
+        for (var file in files!.files!) {
           if (file.id != null) {
-            final epubMedia = await getDriveDocument(file.id!) as drive.Media;
+            final epubMedia = await _authenticationRepository
+                ?.getDriveDocument(file.id!) as drive.Media;
             EpubBook book = await BookRepositoryClient.getEpubFile(epubMedia);
             userBooksMap.addEntries([MapEntry(file.id!, book)]);
             if (file.appProperties != null &&
@@ -124,7 +91,7 @@ class BookRepository {
 
   Future<void> deleteBook(String key) async {
     try {
-      await deleteDriveDocument(key);
+      await _authenticationRepository?.deleteDriveDocument(key);
       Map<String, EpubBook> cachedEpubs = getCachedBooks() ?? {};
       Map<String, String> cachedEpubsPositions =
           getCachedBooksPositions() ?? {};
@@ -144,7 +111,7 @@ class BookRepository {
       cachedEpubsPositions[key] = cfi;
       writeCacheBooksPositions(cachedEpubsPositions);
       final file = new drive.File(appProperties: {"cfi": cfi});
-      await updateDriveDocument(key, file);
+      await _authenticationRepository?.updateDriveDocument(key, file);
     } catch (err) {
       throw UpdateBookPositionsException();
     }
@@ -155,13 +122,15 @@ class BookRepository {
       drive.File fileToUpload = drive.File();
       fileToUpload.name = p.basename(bookFile.path!);
       fileToUpload.parents = ['appDataFolder'];
-      drive.File newFile = await uploadDriveDocument(
+      drive.File? newFile =
+          await _authenticationRepository?.uploadDriveDocument(
         fileToUpload,
         bookFile,
       );
-      final epubMedia = await getDriveDocument(newFile.id!) as drive.Media;
+      final epubMedia = await _authenticationRepository
+          ?.getDriveDocument(newFile!.id!) as drive.Media;
       final epub = await BookRepositoryClient.getEpubFile(epubMedia);
-      final newEpub = <String, EpubBook>{newFile.id!: epub};
+      final newEpub = <String, EpubBook>{newFile!.id!: epub};
       Map<String, EpubBook> cachedEpubs = getCachedBooks() ?? {};
       cachedEpubs.addAll(newEpub);
       writeCachedBooks(cachedEpubs);
