@@ -2,7 +2,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:googleapis/drive/v3.dart' as drive;
 
 mixin class GoogleDriveRepository {
-  late final drive.DriveApi googleDriveApi;
+  late drive.DriveApi googleDriveApi;
 
   Future<drive.File> uploadDriveDocument(
       drive.File file, PlatformFile platformFile) async {
