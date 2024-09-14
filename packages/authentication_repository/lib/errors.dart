@@ -1,6 +1,6 @@
 class ResetPasswordWithEmailAndPasswordFailure implements Exception {
   const ResetPasswordWithEmailAndPasswordFailure([
-    this.message = 'An unknown exception occurred.',
+    this.message = 'An unknown exception occurred while resetting password.',
   ]);
 
   final String message;
@@ -16,7 +16,7 @@ class AuthClientNotInitializedFailure implements Exception {
 
 class SignUpWithEmailAndPasswordFailure implements Exception {
   const SignUpWithEmailAndPasswordFailure([
-    this.message = 'An unknown exception occurred.',
+    this.message = 'An unknown exception occurred while signing up.',
   ]);
 
   factory SignUpWithEmailAndPasswordFailure.fromCode(String code) {
@@ -51,7 +51,7 @@ class SignUpWithEmailAndPasswordFailure implements Exception {
 
 class LogInWithEmailAndPasswordFailure implements Exception {
   const LogInWithEmailAndPasswordFailure([
-    this.message = 'An unknown exception occurred.',
+    this.message = 'An unknown exception occurred while logging in.',
   ]);
 
   factory LogInWithEmailAndPasswordFailure.fromCode(String code) {
@@ -82,7 +82,7 @@ class LogInWithEmailAndPasswordFailure implements Exception {
 
 class LogInWithAppleFailure implements Exception {
   const LogInWithAppleFailure([
-    this.message = 'An unknown exception occurred.',
+    this.message = 'An unknown exception occurred while logging with Apple.',
   ]);
 
   factory LogInWithAppleFailure.fromCode(String code) {
@@ -129,7 +129,7 @@ class LogInWithAppleFailure implements Exception {
 
 class DeleteAccountFailure implements Exception {
   const DeleteAccountFailure([
-    this.message = 'An unknown exception occurred.',
+    this.message = 'An unknown exception occurred while deleting account.',
   ]);
 
   factory DeleteAccountFailure.fromCode(String code) {
@@ -148,7 +148,7 @@ class DeleteAccountFailure implements Exception {
 
 class LogInWithGoogleFailure implements Exception {
   const LogInWithGoogleFailure([
-    this.message = 'An unknown exception occurred.',
+    this.message = 'An unknown exception occurred while logging with Google.',
   ]);
 
   factory LogInWithGoogleFailure.fromCode(String code) {
@@ -185,6 +185,9 @@ class LogInWithGoogleFailure implements Exception {
         return const LogInWithGoogleFailure(
           'The credential verification ID received is invalid.',
         );
+      case 'provider-already-linked':
+        return const LogInWithGoogleFailure(
+            'User can only be linked to one identity for the given provider');
       default:
         return const LogInWithGoogleFailure();
     }
