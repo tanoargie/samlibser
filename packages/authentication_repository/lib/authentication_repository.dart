@@ -105,7 +105,7 @@ class AuthenticationRepository with GoogleDriveRepository {
       if (client == null) {
         throw const AuthClientNotInitializedFailure();
       } else {
-        this._googleDriveApi = new drive.DriveApi(client);
+        this.googleDriveApi = new drive.DriveApi(client);
       }
 
       await _firebaseAuth.signInWithCredential(credential);
