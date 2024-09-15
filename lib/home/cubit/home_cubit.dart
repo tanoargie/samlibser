@@ -48,8 +48,8 @@ class HomeCubit extends Cubit<HomeState> {
           books: savedBooks, positions: savedPositions, loading: false));
     } on DuplicatedRecord {
       emit(state.copyWith(
-          loading: false, errorMessage: DuplicatedRecord.message));
-      await Sentry.captureMessage(DuplicatedRecord.message);
+          loading: false, errorMessage: const DuplicatedRecord().message));
+      await Sentry.captureMessage(const DuplicatedRecord().message);
     } on FileUploadCancelled {
       emit(state.copyWith(loading: false));
     } catch (exception, stack) {
