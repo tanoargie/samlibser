@@ -84,6 +84,15 @@ class AuthenticationRepository with GoogleDriveRepository {
     }
   }
 
+  Future<void> loadGoogleDriveApi() async {
+    final auth.AuthClient? client = await _googleSignIn.authenticatedClient();
+    if (client == null) {
+      throw const AuthClientNotInitializedFailure();
+    } else {
+      this.googleDriveApi = new drive.DriveApi(client);
+    }
+  }
+
   Future<void> logInWithGoogle() async {
     try {
       late final firebase_auth.AuthCredential credential;
@@ -101,13 +110,7 @@ class AuthenticationRepository with GoogleDriveRepository {
           idToken: googleAuth.idToken,
         );
       }
-      final auth.AuthClient? client = await _googleSignIn.authenticatedClient();
-      if (client == null) {
-        throw const AuthClientNotInitializedFailure();
-      } else {
-        this.googleDriveApi = new drive.DriveApi(client);
-      }
-
+      await loadGoogleDriveApi();
       await _firebaseAuth.signInWithCredential(credential);
       await _firebaseAuth.currentUser?.linkWithCredential(credential);
     } on firebase_auth.FirebaseAuthException catch (e) {
