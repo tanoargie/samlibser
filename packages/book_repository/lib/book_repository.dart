@@ -1,5 +1,6 @@
 import 'package:book_repository/book_repository_client.dart';
 import 'package:book_repository/errors.dart';
+import 'package:flutter/foundation.dart';
 import 'package:cache/cache.dart';
 import 'package:path/path.dart' as p;
 import 'package:googleapis/drive/v3.dart' as drive;
@@ -11,7 +12,7 @@ import 'package:authentication_repository/authentication_repository.dart';
 
 class BookRepository {
   BookRepository(
-      {required AuthenticationRepository authenticationRepository,
+      {required AuthenticationRepository? authenticationRepository,
       CacheClient? cache})
       : _authenticationRepository = authenticationRepository,
         _cache = cache ?? CacheClient();
@@ -21,6 +22,30 @@ class BookRepository {
 
   static const booksCacheKey = '__books_cache_key__';
   static const booksPositionsCacheKey = '__books_positions_cache_key__';
+
+  Future<T> exceptionHandler<T, E extends Exception>({
+    required ValueGetter<Future<T>> tryBlock,
+    required E Function({String? error}) makeException,
+  }) async {
+    int tryCounter = 0;
+    try {
+      return await tryBlock();
+    } on AccessDeniedException {
+      await this._authenticationRepository?.loadGoogleDriveApi();
+      tryCounter++;
+      if (tryCounter == 2) {
+        rethrow;
+      } else {
+        return await tryBlock();
+      }
+    } catch (e) {
+      if (e is E) {
+        rethrow;
+      }
+
+      throw makeException(error: e.toString());
+    }
+  }
 
   void writeCachedBooks(Map<String, EpubBook> userBooks) {
     _cache.write(key: booksCacheKey, value: userBooks);
@@ -37,45 +62,6 @@ class BookRepository {
 
   Map<String, EpubBook>? getCachedBooks() {
     return _cache.read<Map<String, EpubBook>>(key: booksCacheKey) ?? null;
-  }
-
-  Future<Map<String, EpubBook>> getBooksFromServer() async {
-    int tryCounter = 0;
-    try {
-      Map<String, EpubBook> userBooksMap = {};
-      Map<String, String> userBooksPositionsMap = {};
-      drive.FileList? files =
-          await _authenticationRepository?.getDriveDocuments();
-      if (files?.files != null) {
-        for (var file in files!.files!) {
-          if (file.id != null) {
-            final epubMedia = await _authenticationRepository
-                ?.getDriveDocument(file.id!) as drive.Media;
-            EpubBook book = await BookRepositoryClient.getEpubFile(epubMedia);
-            userBooksMap.addEntries([MapEntry(file.id!, book)]);
-            if (file.appProperties != null &&
-                file.appProperties!.containsKey('cfi')) {
-              userBooksPositionsMap.addEntries(
-                  [MapEntry(file.id!, file.appProperties!['cfi']!)]);
-            }
-          }
-        }
-      }
-      writeCachedBooks(userBooksMap);
-      writeCacheBooksPositions(userBooksPositionsMap);
-      return userBooksMap;
-    } on AccessDeniedException {
-      await _authenticationRepository?.loadGoogleDriveApi();
-      tryCounter++;
-      if (tryCounter == 2) {
-        throw GetBooksException();
-      } else {
-        return getBooksFromServer();
-      }
-    } catch (e) {
-      print(e);
-      throw GetBooksException();
-    }
   }
 
   Future<Map<String, EpubBook>> getBooks() async {
@@ -101,81 +87,84 @@ class BookRepository {
     }
   }
 
+  Future<Map<String, EpubBook>> getBooksFromServer() async {
+    return await exceptionHandler(
+        tryBlock: () async {
+          Map<String, EpubBook> userBooksMap = {};
+          Map<String, String> userBooksPositionsMap = {};
+          drive.FileList? files =
+              await _authenticationRepository?.getDriveDocuments();
+          if (files?.files != null) {
+            for (var file in files!.files!) {
+              if (file.id != null) {
+                final epubMedia = await _authenticationRepository
+                    ?.getDriveDocument(file.id!) as drive.Media;
+                EpubBook book =
+                    await BookRepositoryClient.getEpubFile(epubMedia);
+                userBooksMap.addEntries([MapEntry(file.id!, book)]);
+                if (file.appProperties != null &&
+                    file.appProperties!.containsKey('cfi')) {
+                  userBooksPositionsMap.addEntries(
+                      [MapEntry(file.id!, file.appProperties!['cfi']!)]);
+                }
+              }
+            }
+          }
+          writeCachedBooks(userBooksMap);
+          writeCacheBooksPositions(userBooksPositionsMap);
+          return userBooksMap;
+        },
+        makeException: GetBooksException.new);
+  }
+
   Future<void> deleteBook(String key) async {
-    int tryCounter = 0;
-    try {
-      await _authenticationRepository?.deleteDriveDocument(key);
-      Map<String, EpubBook> cachedEpubs = getCachedBooks() ?? {};
-      Map<String, String> cachedEpubsPositions =
-          getCachedBooksPositions() ?? {};
-      cachedEpubs.remove(key);
-      cachedEpubsPositions.remove(key);
-      writeCachedBooks(cachedEpubs);
-      writeCacheBooksPositions(cachedEpubsPositions);
-    } on AccessDeniedException {
-      await _authenticationRepository?.loadGoogleDriveApi();
-      tryCounter++;
-      if (tryCounter == 2) {
-        throw DeleteRecordException();
-      } else {
-        return deleteBook(key);
-      }
-    } catch (e) {
-      throw DeleteRecordException();
-    }
+    return await exceptionHandler(
+        tryBlock: () async {
+          await _authenticationRepository?.deleteDriveDocument(key);
+          Map<String, EpubBook> cachedEpubs = getCachedBooks() ?? {};
+          Map<String, String> cachedEpubsPositions =
+              getCachedBooksPositions() ?? {};
+          cachedEpubs.remove(key);
+          cachedEpubsPositions.remove(key);
+          writeCachedBooks(cachedEpubs);
+          writeCacheBooksPositions(cachedEpubsPositions);
+        },
+        makeException: DeleteRecordException.new);
   }
 
   Future<void> updateBookPosition(String key, String cfi) async {
-    int tryCounter = 0;
-    try {
-      Map<String, String> cachedEpubsPositions =
-          getCachedBooksPositions() ?? {};
-      cachedEpubsPositions[key] = cfi;
-      writeCacheBooksPositions(cachedEpubsPositions);
-      final file = new drive.File(appProperties: {"cfi": cfi});
-      await _authenticationRepository?.updateDriveDocument(key, file);
-    } on AccessDeniedException {
-      await _authenticationRepository?.loadGoogleDriveApi();
-      tryCounter++;
-      if (tryCounter == 2) {
-        throw UpdateBookPositionsException();
-      } else {
-        return updateBookPosition(key, cfi);
-      }
-    } catch (err) {
-      throw UpdateBookPositionsException();
-    }
+    return await exceptionHandler(
+        tryBlock: () async {
+          Map<String, String> cachedEpubsPositions =
+              getCachedBooksPositions() ?? {};
+          cachedEpubsPositions[key] = cfi;
+          writeCacheBooksPositions(cachedEpubsPositions);
+          final file = new drive.File(appProperties: {"cfi": cfi});
+          await _authenticationRepository?.updateDriveDocument(key, file);
+        },
+        makeException: UpdateBookPositionsException.new);
   }
 
   Future<Map<String, EpubBook>> addBook(PlatformFile bookFile) async {
-    int tryCounter = 0;
-    try {
-      drive.File fileToUpload = drive.File();
-      fileToUpload.name = p.basename(bookFile.path!);
-      fileToUpload.parents = ['appDataFolder'];
-      drive.File? newFile =
-          await _authenticationRepository?.uploadDriveDocument(
-        fileToUpload,
-        bookFile,
-      );
-      final epubMedia = await _authenticationRepository
-          ?.getDriveDocument(newFile!.id!) as drive.Media;
-      final epub = await BookRepositoryClient.getEpubFile(epubMedia);
-      final newEpub = <String, EpubBook>{newFile!.id!: epub};
-      Map<String, EpubBook> cachedEpubs = getCachedBooks() ?? {};
-      cachedEpubs.addAll(newEpub);
-      writeCachedBooks(cachedEpubs);
-      return newEpub;
-    } on AccessDeniedException {
-      await _authenticationRepository?.loadGoogleDriveApi();
-      tryCounter++;
-      if (tryCounter == 2) {
-        throw UploadBookException();
-      } else {
-        return addBook(bookFile);
-      }
-    } catch (err) {
-      throw UploadBookException();
-    }
+    return await exceptionHandler(
+        tryBlock: () async {
+          drive.File fileToUpload = drive.File();
+          fileToUpload.name = p.basename(bookFile.path!);
+          fileToUpload.parents = ['appDataFolder'];
+          drive.File? newFile =
+              await _authenticationRepository?.uploadDriveDocument(
+            fileToUpload,
+            bookFile,
+          );
+          final epubMedia = await _authenticationRepository
+              ?.getDriveDocument(newFile!.id!) as drive.Media;
+          final epub = await BookRepositoryClient.getEpubFile(epubMedia);
+          final newEpub = <String, EpubBook>{newFile!.id!: epub};
+          Map<String, EpubBook> cachedEpubs = getCachedBooks() ?? {};
+          cachedEpubs.addAll(newEpub);
+          writeCachedBooks(cachedEpubs);
+          return newEpub;
+        },
+        makeException: UploadBookException.new);
   }
 }

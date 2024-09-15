@@ -1,35 +1,41 @@
 class DuplicatedRecord implements Exception {
-  const DuplicatedRecord();
+  const DuplicatedRecord({String? error})
+      : message = error ?? "Duplicated book!";
 
-  static String message = "Duplicated book!";
+  final String message;
 }
 
 class FileUploadCancelled implements Exception {
-  const FileUploadCancelled();
+  const FileUploadCancelled({String? error})
+      : message = error ?? "Cancelled upload!";
 
-  static String message = "Cancelled upload!";
+  final String message;
 }
 
 class DeleteRecordException implements Exception {
-  const DeleteRecordException();
+  const DeleteRecordException({String? error})
+      : message = error ?? "Could not delete book!";
 
-  static String message = "Could not delete book!";
+  final String message;
 }
 
 class UpdateBookPositionsException implements Exception {
-  const UpdateBookPositionsException();
+  const UpdateBookPositionsException({String? error})
+      : message = error ?? "Could not update book position!";
 
-  static String message = "Could not update book position!";
+  final String message;
 }
 
 class UploadBookException implements Exception {
-  const UploadBookException();
+  const UploadBookException({String? error})
+      : message = error ?? "Could not upload book!";
 
-  static String message = "Could not upload book!";
+  final String message;
 }
 
 class GetBooksException implements Exception {
-  const GetBooksException();
+  const GetBooksException({String? error})
+      : message = error ?? "Could not retrieve books!";
 
-  static String message = "Could not retrieve books!";
+  final String message;
 }
