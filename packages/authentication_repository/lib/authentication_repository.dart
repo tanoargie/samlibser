@@ -5,7 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
 import 'package:flutter/widgets.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:extension_google_sign_in_as_googleapis_auth/extension_google_sign_in_as_googleapis_auth.dart';
-import 'package:googleapis_auth/googleapis_auth.dart' as auth show AuthClient;
+import 'package:googleapis_auth/googleapis_auth.dart' show AuthClient;
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:googleapis/drive/v3.dart' as drive;
 import 'package:cache/cache.dart';
@@ -85,7 +85,7 @@ class AuthenticationRepository with GoogleDriveRepository {
   }
 
   Future<void> loadGoogleDriveApi() async {
-    final auth.AuthClient? client = await _googleSignIn.authenticatedClient();
+    final AuthClient? client = await _googleSignIn.authenticatedClient();
     if (client == null) {
       throw const AuthClientNotInitializedFailure();
     } else {
@@ -111,8 +111,12 @@ class AuthenticationRepository with GoogleDriveRepository {
         );
       }
       await loadGoogleDriveApi();
-      await _firebaseAuth.signInWithCredential(credential);
-      await _firebaseAuth.currentUser?.linkWithCredential(credential);
+      final currentUser = firebase_auth.FirebaseAuth.instance.currentUser;
+      if (currentUser != null) {
+        await _firebaseAuth.currentUser?.linkWithCredential(credential);
+      } else {
+        await _firebaseAuth.signInWithCredential(credential);
+      }
     } on firebase_auth.FirebaseAuthException catch (e) {
       throw LogInWithGoogleFailure.fromCode(e.code);
     } catch (_) {
