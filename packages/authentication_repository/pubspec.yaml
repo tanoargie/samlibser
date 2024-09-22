@@ -12,7 +12,7 @@ dependencies:
   dart_jsonwebtoken: ^2.11.0
   equatable: ^2.0.5
   extension_google_sign_in_as_googleapis_auth: ^2.0.12
-  file_picker: ^8.0.0+1
+  file_picker: ^5.5.0
   firebase_auth: ^4.10.0
   firebase_core: ^2.16.0
   flutter:
