@@ -29,6 +29,7 @@ class BookRepository {
   }) async {
     int tryCounter = 0;
     try {
+      await this._authenticationRepository?.loadGoogleDriveApi();
       return await tryBlock();
     } on AccessDeniedException {
       await this._authenticationRepository?.loadGoogleDriveApi();

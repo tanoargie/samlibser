@@ -87,7 +87,7 @@ class AuthenticationRepository with GoogleDriveRepository {
   Future<void> loadGoogleDriveApi() async {
     final AuthClient? client = await _googleSignIn.authenticatedClient();
     if (client == null) {
-      throw const AuthClientNotInitializedFailure();
+      await this.logOut();
     } else {
       this.googleDriveApi = new drive.DriveApi(client);
     }

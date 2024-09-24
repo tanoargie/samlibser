@@ -6,14 +6,6 @@ class ResetPasswordWithEmailAndPasswordFailure implements Exception {
   final String message;
 }
 
-class AuthClientNotInitializedFailure implements Exception {
-  const AuthClientNotInitializedFailure([
-    this.message = 'Auth client was not initialized!',
-  ]);
-
-  final String message;
-}
-
 class SignUpWithEmailAndPasswordFailure implements Exception {
   const SignUpWithEmailAndPasswordFailure([
     this.message = 'An unknown exception occurred while signing up.',
