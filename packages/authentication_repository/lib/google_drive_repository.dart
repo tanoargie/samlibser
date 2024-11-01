@@ -15,11 +15,11 @@ mixin class GoogleDriveRepository {
 
   Future<Object?> getDriveDocument(String fileId) async {
     return googleDriveApi.files
-        .get(fileId, downloadOptions: drive.DownloadOptions.fullMedia);
+        .get(fileId, downloadOptions: drive.DownloadOptions.fullMedia, $fields: '*');
   }
 
   Future<drive.FileList> getDriveDocuments() async {
-    return googleDriveApi.files.list(spaces: 'appDataFolder');
+    return googleDriveApi.files.list(spaces: 'appDataFolder', $fields: '*');
   }
 
   Future<void> deleteDriveDocument(String fileId) async {
@@ -27,6 +27,6 @@ mixin class GoogleDriveRepository {
   }
 
   Future<drive.File> updateDriveDocument(String id, drive.File file) async {
-    return googleDriveApi.files.update(file, id, $fields: 'appProperties');
+    return googleDriveApi.files.update(file, id, $fields: '*');
   }
 }

@@ -140,7 +140,7 @@ class BookRepository {
               getCachedBooksPositions() ?? {};
           cachedEpubsPositions[key] = cfi;
           writeCacheBooksPositions(cachedEpubsPositions);
-          final file = new drive.File(appProperties: {"cfi": cfi});
+          final file = new drive.File(appProperties: { 'cfi': cfi });
           await _authenticationRepository?.updateDriveDocument(key, file);
         },
         makeException: UpdateBookPositionsException.new);
